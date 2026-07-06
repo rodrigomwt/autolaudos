@@ -1,0 +1,86 @@
+<div th:fragment="modal_cadastro">
+
+	<div class="modal-overlay" id="modalCadastroOverlay">
+		<div class="modal-card">
+			<button class="modal-close" onclick="fecharModalCadastro()">
+				<i class="fas fa-times"></i>
+			</button>
+
+			<div id="screenCadastro">
+				<div class="modal-title">Crie sua conta</div>
+				<div class="modal-subtitle">Preencha os dados abaixo para se
+					cadastrar.</div>
+
+				<div class="form-group">
+					<label>Nome Completo</label>
+					<div class="input-wrapper">
+						<i class="fas fa-user icon-left"></i> <input type="text"
+							id="cadNome" placeholder="Ex: João Silva" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>CPF</label>
+					<div class="input-wrapper">
+						<i class="fas fa-id-card icon-left"></i> <input type="text"
+							id="cpf" maxlength="14" placeholder="Insira seu CPF"
+							oninput="mascaraCPF(this)" onblur="verificarCPF(this)" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>E-mail</label>
+					<div class="input-wrapper">
+						<i class="fas fa-envelope icon-left"></i> <input type="email"
+							id="cadEmail" placeholder="seu@email.com" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>Telefone</label>
+					<div class="input-wrapper">
+						<i class="fas fa-phone icon-left"></i> <input type="text"
+							id="cadTelefone" placeholder="(00) 00000-0000" maxlength="15"
+							oninput="mascaraTelefone(this)" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>Senha</label>
+					<div class="input-wrapper">
+						<i class="fas fa-lock icon-left"></i> <input type="password"
+							id="cadSenha" placeholder="Crie uma senha"
+							oninput="verificarForcaCadastro(this.value)" /> <i
+							class="fas fa-eye toggle-password"
+							onclick="toggleSenha('cadSenha', this)"></i>
+					</div>
+					<div class="strength-bar">
+						<div class="strength-fill" id="strengthFillCad"></div>
+					</div>
+					<div class="strength-label" id="strengthLabelCad"></div>
+					<div class="password-hint">Mínimo 8 caracteres, com letras e
+						números.</div>
+				</div>
+
+				<div class="form-group">
+					<label>Confirmar Senha</label>
+					<div class="input-wrapper">
+						<i class="fas fa-lock icon-left"></i> <input type="password"
+							id="cadSenhaConfirma" placeholder="Repita a senha" /> <i
+							class="fas fa-eye toggle-password"
+							onclick="toggleSenha('cadSenhaConfirma', this)"></i>
+					</div>
+				</div>
+
+				<button class="btn-primary" onclick="realizarCadastro()">Cadastrar</button>
+
+				<div class="links-row" style="justify-content: center;">
+					<button class="link-btn" onclick="irParaLogin()">Já tem
+						uma conta? Entrar</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</div>

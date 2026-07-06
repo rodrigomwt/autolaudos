@@ -1,0 +1,159 @@
+@charset "UTF-8";
+
+/* Modal de Termos e Condições */
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.6);
+	animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {from { opacity:0;
+	
+}
+
+to {
+	opacity: 1;
+}
+
+}
+.modal-content {
+	background-color: #fff;
+	margin: 3% auto;
+	padding: 0;
+	border-radius: 10px;
+	width: 90%;
+	max-width: 900px;
+	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+	animation: slideDown 0.4s;
+}
+
+@keyframes slideDown {from { transform:translateY(-50px);
+	opacity: 0;
+}
+
+to {
+	transform: translateY(0);
+	opacity: 1;
+}
+
+}
+.modal-header {
+	padding: 25px 30px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border-radius: 10px 10px 0 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.modal-header h2 {
+	margin: 0;
+	font-size: 1.8rem;
+}
+
+.close-modal, .close-modal-privacidade {
+	color: white;
+	font-size: 35px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.2s;
+}
+
+.close-modal:hover, .close-modal:focus {
+	transform: scale(1.2);
+}
+
+.modal-body {
+	padding: 30px;
+	max-height: 70vh;
+	overflow-y: auto;
+	line-height: 1.7;
+}
+
+.modal-body .subtitle {
+	text-align: center;
+	color: #666;
+	margin-bottom: 30px;
+	font-size: 1.1rem;
+	font-style: italic;
+}
+
+.modal-body h3 {
+	color: #2c3e50;
+	font-size: 1.3rem;
+	margin-top: 30px;
+	margin-bottom: 12px;
+	border-bottom: 2px solid #667eea;
+	padding-bottom: 8px;
+}
+
+.modal-body h4 {
+	color: #34495e;
+	font-size: 1.1rem;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.modal-body p {
+	color: #555;
+	margin-bottom: 15px;
+	text-align: justify;
+}
+
+.modal-body ul {
+	margin-left: 25px;
+	margin-bottom: 20px;
+}
+
+.modal-body li {
+	color: #555;
+	margin-bottom: 8px;
+}
+
+.modal-body .empresa-info {
+	background: #f8f9fa;
+	padding: 20px;
+	border-radius: 8px;
+	margin-top: 30px;
+	border-left: 4px solid #667eea;
+}
+
+.modal-body .empresa-info h4 {
+	margin-top: 0;
+	color: #2c3e50;
+}
+
+.modal-body .data-atualizacao {
+	text-align: center;
+	color: #999;
+	font-size: 0.9rem;
+	margin-top: 30px;
+	font-style: italic;
+}
+
+/* Scrollbar personalizada para o modal */
+.modal-body::-webkit-scrollbar {
+	width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+	background: #667eea;
+	border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+	background: #764ba2;
+}

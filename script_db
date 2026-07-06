@@ -1,0 +1,79 @@
+CREATE TABLE users (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    name         VARCHAR(100)        NOT NULL,
+    federal_id    VARCHAR(20)         NOT NULL,
+    email        VARCHAR(150)        NOT NULL UNIQUE,
+    phone        VARCHAR(20),
+    create_date  DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date  DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE plans (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    user_id      INT                 NOT NULL,
+    plan         VARCHAR(100)        NOT NULL,
+    description  TEXT,
+    plan_value   DECIMAL(10, 2)      NOT NULL,
+    create_date  DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date  DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_plans_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE payments (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT                 NOT NULL,
+    plan_id         INT                 NOT NULL,
+    gateway         VARCHAR(50)         NOT NULL, -- Ex: 'mercado_pago'
+    external_id     VARCHAR(255),                 -- ID que vem do Mercado Pago
+    status          VARCHAR(50)         NOT NULL, -- Ex: 'pending', 'approved', 'rejected'
+    qr_code         TEXT,
+    qr_code_base64  TEXT,
+    create_date     DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date     DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_payments_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_payments_plan FOREIGN KEY (plan_id) REFERENCES plans(id)
+);
+
+CREATE TABLE orders (
+    id             INT AUTO_INCREMENT PRIMARY KEY,
+    user_id        INT                 NOT NULL,
+    plan_id        INT                 NOT NULL,
+    payment_id     INT				   NOT NULL,
+    license_plate  VARCHAR(50)         not null,
+    gateway        VARCHAR(50)         NOT NULL, -- Ex: 'conferi'
+    product		   VARCHAR(100)		   NOT NULL,
+    status         VARCHAR(50)         NOT NULL,
+    query_code     VARCHAR(255),
+    query_result   TEXT,
+    create_date    DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date    DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_orders_plan FOREIGN KEY (plan_id) REFERENCES plans(id),
+    CONSTRAINT fk_orders_payments FOREIGN KEY (payment_id) REFERENCES payments(id)
+);
+
+CREATE TABLE user_credentials (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT          NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    active      BOOLEAN      NOT NULL DEFAULT TRUE,
+    create_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_credentials_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE activation_tokens (
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
+    token       VARCHAR(255)    NOT NULL UNIQUE,
+    user_id     INT          NOT NULL,
+    expiration  DATETIME        NOT NULL,
+    used        TINYINT(1)      NOT NULL DEFAULT 0,
+    create_date DATETIME        NOT NULL,
+
+    PRIMARY KEY (id),
+    CONSTRAINT fk_activation_token_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+

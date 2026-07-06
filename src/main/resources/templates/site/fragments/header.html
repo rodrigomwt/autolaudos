@@ -1,0 +1,36 @@
+<header th:fragment="header">
+    <nav>
+        <div class="logo-container">
+            <img th:src="@{/site/images/logo_rvm.png}" alt="Auto Laudos">
+        </div>
+        <ul class="nav-center">
+            <li><a th:href="@{/site/home#home}">Início</a></li>
+            <li><a th:href="@{/site/home#services}">Serviços</a></li>
+            <li><a th:href="@{/site/home#processo}">Como Funciona</a></li>
+            <li><a th:href="@{/site/home#planos}">Planos</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <a href="javascript:void(0)" class="btn-login" onclick="abrirModalLogin()">Login</a>
+            <a href="javascript:void(0)" class="btn-cadastro" onclick="abrirModalCadastro()">Cadastrar</a>
+        </div>
+
+        <!-- Botão hamburguer (visível apenas no mobile) -->
+        <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Menu mobile (drawer) -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a th:href="@{/site/home#home}" onclick="fecharMenu()">Início</a>
+        <a th:href="@{/site/home#services}" onclick="fecharMenu()">Serviços</a>
+        <a th:href="@{/site/home#processo}" onclick="fecharMenu()">Como Funciona</a>
+        <a th:href="@{/site/home#planos}" onclick="fecharMenu()">Planos</a>
+        <div class="mobile-auth">
+            <a href="javascript:void(0)" class="btn-login" onclick="fecharMenu(); abrirModalLogin()">Login</a>
+            <a href="javascript:void(0)" class="btn-cadastro" onclick="fecharMenu(); abrirModalCadastro()">Cadastrar</a>
+        </div>
+    </div>
+</header>

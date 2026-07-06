@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+<title>Auto Laudos - Laudos Veiculares</title>
+
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+	rel="stylesheet" />
+<link th:href="@{/site/css/layout_site.css}" rel="stylesheet" />
+<link th:href="@{/site/css/termos.css}" rel="stylesheet" />
+<link th:href="@{/site/css/modalLoginCadastro.css}" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Google tag (gtag.js) -->
+<script async
+	src="https://www.googletagmanager.com/gtag/js?id=AW-11436160697"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag() {
+		dataLayer.push(arguments);
+	}
+	gtag('js', new Date());
+
+	gtag('config', 'AW-11436160697');
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+	!function(f, b, e, v, n, t, s) {
+		if (f.fbq)
+			return;
+		n = f.fbq = function() {
+			n.callMethod ? n.callMethod.apply(n, arguments) : n.queue
+					.push(arguments)
+		};
+		if (!f._fbq)
+			f._fbq = n;
+		n.push = n;
+		n.loaded = !0;
+		n.version = '2.0';
+		n.queue = [];
+		t = b.createElement(e);
+		t.async = !0;
+		t.src = v;
+		s = b.getElementsByTagName(e)[0];
+		s.parentNode.insertBefore(t, s)
+	}(window, document, 'script',
+			'https://connect.facebook.net/en_US/fbevents.js');
+	fbq('init', '1702948261054245');
+	fbq('track', 'PageView');
+</script>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+	<noscript>
+		<img height="1" width="1" style="display: none"
+			src="https://www.facebook.com/tr?id=1702948261054245&ev=PageView&noscript=1" />
+	</noscript>
+	
+	<!-- HEADER COMUM -->
+	<header th:replace="~{site/fragments/header :: header}"></header>
+
+	<!-- CONTEÚDO DINÂMICO -->
+	<main layout:fragment="content"></main>
+
+	<!-- FOOTER COMUM -->
+	<footer th:replace="~{site/fragments/footer :: footer}"></footer>
+
+	<!--  MODAIS -->
+	<div
+		th:replace="~{site/fragments/termos_e_privacidade :: termos_e_privacidade}"></div>
+	<div th:replace="~{site/fragments/modal_login :: modal_login}"></div>
+	<div th:replace="~{site/fragments/modal_cadastro :: modal_cadastro}"></div>
+
+	<script th:src="@{/site/js/layout_site.js}"></script>
+	<script th:src="@{/site/js/termos.js}"></script>
+	<script th:src="@{/site/js/politicas.js}"></script>
+	<script th:src="@{/site/js/modalLogin.js}"></script>
+	<script th:src="@{/site/js/modalCadastro.js}"></script>
+
+</body>
+</html>

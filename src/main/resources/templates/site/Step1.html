@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{site/layout_site}">
+
+<head>
+<title>Auto Laudos - Informações do Veículo</title>
+<!-- CSS específico desta página -->
+<link rel="stylesheet" th:href="@{/site/css/step1.css}">
+<!-- JS específico desta página -->
+<script th:src="@{/site/js/step1.js}" defer></script>
+</head>
+
+<body>
+	<section layout:fragment="content">
+
+		<section class="section-veiculo">
+			<div class="container">
+				<h2 class="section-title">
+					Informações encontradas com <span>sucesso</span>
+				</h2>
+				<p class="section-subtitle">Pesquisamos nos principais bancos de
+					dados nacionais para gerar seu relatório único.</p>
+
+				<div class="card card-modern">
+					<div class="fields-grid">
+						<div class="field-item">
+							<span class="field-label">Marca</span> <span class="field-value"
+								th:text="${veiculo.marca}">Marca Genérica</span>
+						</div>
+						<div class="field-item">
+							<span class="field-label">Modelo</span> <span class="field-value"
+								th:text="${veiculo.modelo}">Modelo Genérico</span>
+						</div>
+						<div class="field-item">
+							<span class="field-label">Ano Fabr.</span> <span
+								class="field-value" th:text="${veiculo.anoFabricacao}">YYYY</span>
+						</div>
+						<div class="field-item">
+							<span class="field-label">Ano Modelo</span> <span
+								class="field-value" th:text="${veiculo.anoModelo}">YYYY</span>
+						</div>
+					</div>
+
+					<div class="divider"></div>
+
+					<div class="fields-grid-row2">
+						<div class="field-item">
+							<span class="field-label">Cor</span> <span class="field-value"
+								th:text="${veiculo.corVeiculo}">Cor Genérica</span>
+						</div>
+						<div class="field-item">
+							<span class="field-label">Renavam</span> <span
+								class="field-value">***********</span>
+						</div>
+						<div class="field-item">
+							<span class="field-label">Chassi</span> <span class="field-value"
+								th:text="${veiculo.chassi}">XXXXXXXXXXXXXXXXX</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="buttons-row">
+					<button class="btn btn-back" onclick="voltarHome()">
+						<span class="arrow">←</span> Nova Pesquisa
+					</button>
+					<button class="btn btn-next" onclick="step2()">
+						Prosseguir para escolha do laudo <span class="arrow">→</span>
+					</button>
+				</div>
+			</div>
+		</section>
+
+	</section>
+	<script>
+        fbq('trackCustom', 'ConsultaPlaca');
+    </script>
+</body>
+</html>

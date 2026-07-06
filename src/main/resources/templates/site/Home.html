@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{site/layout_site}">
+
+<head>
+<title>Auto Laudos - Laudos Veiculares</title>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<link rel="stylesheet" th:href="@{/site/css/home.css}">
+<!-- JS específico desta página -->
+<script th:src="@{/site/js/home.js}" defer></script>
+</head>
+
+<body>
+	<section layout:fragment="content">
+
+		<!-- HERO -->
+		<section class="hero" id="home">
+			<div class="hero-banner">
+				<img src="/site/images/banner.png" alt="Banner">
+			</div>
+			<div class="hero-container">
+				<div class="placa-card">
+					<div class="placa-input-wrapper">
+						<input id="placaInput" class="placa-input" placeholder=""
+							maxlength="8" autocomplete="off"> <label for="placaInput"
+							class="placeholder-custom">Digite a placa do veículo</label>
+					</div>
+					<button class="btn-consultar-placa" onclick="iniciarLaudo()">Consultar
+						placa</button>
+				</div>
+			</div>
+		</section>
+
+		<!-- FEATURES -->
+		<section class="features" id="services">
+			<div class="container">
+				<div class="features-title">
+					<h2>
+						A plataforma mais completa para <span>Consulta de Histórico
+							Veicular</span>
+					</h2>
+				</div>
+				<div class="features-grid">
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set4_1.png}" width="50"
+								height="50">
+						</div>
+						<h3>Dados do Veículo</h3>
+						<p>Informações detalhadas dos veículos, marca/modelo, renavam,
+							chassi, motor, para garantir identidade e autenticidade do
+							veículo.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set4_2.png}" width="50"
+								height="50">
+						</div>
+						<h3>Sinistro</h3>
+						<p>Acesso a fotos reais do veículo quando disponível em
+							leilões e outras bases de dados oficiais.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set4_3.png}" width="50"
+								height="50">
+						</div>
+						<h3>Roubo/Furto</h3>
+						<p>Verificação completa de todos os registros de roubo e furto
+							em todas as bases de dados nacionais, garantindo procedência na
+							compra.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set1_1.png}" width="50"
+								height="50">
+						</div>
+						<h3>Restrições</h3>
+						<p>Consulte o histórico completo de restrições
+							(Administrativas, Judiciais, Tributárias e Financeiras) e evite
+							surpresas desagradáveis.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set1_2.png}" width="50"
+								height="50">
+						</div>
+						<h3>Leilão</h3>
+						<p>Acesso a fotos reais do veículo quando disponível em
+							leilões e outras bases de dados oficiais.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set1_3.png}" width="50"
+								height="50">
+						</div>
+						<h3>CSV</h3>
+						<p>Descubra se seu veículo possui CSV (certificado de
+							Segurança Veicular), saiba qual tipo de CSV encontra-se no seu
+							veículo (Sinistro/Alteração de característica).</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set2_1.png}" width="50"
+								height="50">
+						</div>
+						<h3>Fotos do Veículo</h3>
+						<p>Acesso a fotos reais do veículo quando disponível em
+							leilões e outras bases de dados oficiais.</p>
+						<p style="color: red; font-size: 11px">*Sujeito a constar na
+							base nacional.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set2_2.png}" width="50"
+								height="50">
+						</div>
+						<h3>Alerta de Recall</h3>
+						<p>Saiba se há recalls pendentes e evite rodar com falhas que
+							comprometem sua segurança.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set2_3.png}" width="50"
+								height="50">
+						</div>
+						<h3>+ 50 Informações</h3>
+						<p>Acesso a fotos reais do veículo quando disponível em
+							leilões e outras bases de dados oficiais.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set3_1.png}" width="50"
+								height="50">
+						</div>
+						<h3>Hodômetro</h3>
+						<p>Consulte registros de quilometragem e identifique possíveis
+							divergências ou indícios de adulteração antes da compra.</p>
+						<p style="color: red; font-size: 11px">*Sujeito a constar na
+							base nacional.</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<img th:src="@{/site/images/icon_set3_2.png}" width="50"
+								height="50">
+						</div>
+						<h3>Veiculo de Frota</h3>
+						<p>Verifique se o veículo foi de frota ou locadora e avalie o
+							histórico de uso antes de fechar negócio.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- PROCESSO -->
+		<section class="process" id="processo">
+			<div class="container">
+				<div class="process-intro">
+					<h2>
+						<span>Passo a passo</span> de como realizar a consulta:
+					</h2>
+				</div>
+				<div class="process-steps single-step">
+					<img class="steps-image" th:src="@{/site/images/steps.png}"
+						alt="Passo a passo de como realizar a consulta">
+				</div>
+			</div>
+		</section>
+
+		<!-- PLANOS -->
+		<section class="plans" id="planos">
+			<div class="container">
+				<div class="plans-header">
+					<h2>
+						Escolha a <span>consulta ideal</span> para placa do veículo
+					</h2>
+				</div>
+				<div class="table-responsive">
+					<table class="comparison-table">
+						<thead>
+							<tr>
+								<th class="col-info">INFORMAÇÕES</th>
+								<th class="col-premium">AUTO LAUDOS<br>PREMIUM
+								</th>
+								<th class="col-completa">AUTO LAUDOS<br>COMPLETA
+								</th>
+								<th class="col-essencial">AUTO LAUDOS<br>ESSENCIAL
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Base BIN nacional / estadual</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									DENATRAN CSV</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Roubo / Furto</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Débitos do veículo</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Restrições do veículo</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Gravame</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Recall</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Sinistro</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Leilão</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Fotos <small>- Sujeito a constar na base nacional.</small></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Hodômetro <small>- Sujeito a constar na base nacional.</small></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Multas (PRF, Renainf)</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									E-decodificador de chassis</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Tabela FIPE</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"><i class="fas fa-check-circle"></i>
+									Histórico de proprietários</td>
+								<td><i class="fas fa-check icon-blue"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+								<td><i class="fas fa-check icon-gray"></i></td>
+							</tr>
+							<tr>
+								<td class="info-cell"></td>
+								<td class="price-cell">R$ <span>67</span>,00
+									<button class="btn-consultar btn-dark-blue"
+										onclick="window.location.href='/site/home#home'">Consultar
+										agora</button>
+										<a href="/site/pdf/PREMIUM.pdf" target="_blank">Modelo da consulta</a>
+								</td>
+								<td class="price-cell">R$ <span>57</span>,00
+									<button class="btn-consultar btn-light-blue"
+										onclick="window.location.href='/site/home#home'">Consultar
+										agora</button>
+										<a href="/site/pdf/COMPLETA.pdf" target="_blank">Modelo da consulta</a>
+								</td>
+								<td class="price-cell">R$ <span>47</span>,00
+									<button class="btn-consultar btn-gray"
+										onclick="window.location.href='/site/home#home'">Consultar
+										agora</button>
+										<a href="/site/pdf/ESSENCIAL.pdf" target="_blank">Modelo da consulta</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ -->
+		<section class="faq" id="faq">
+			<div class="container">
+				<div class="faq-header">
+					<h2>
+						Perguntas <span>Frequentes</span>
+					</h2>
+					<p>Confira nossas respostas para as perguntas mais frequentes.</p>
+				</div>
+				<div class="faq-list">
+					<details class="faq-item">
+						<summary>
+							O que é a consulta ou laudo do AUTO LAUDOS? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								A consulta do <b>AUTO LAUDOS</b> é um relatório informativo que
+								reúne diversos dados sobre o histórico de um veículo. A partir
+								da placa, chassi ou Renavam, o sistema realiza buscas em
+								diferentes bases de dados e apresenta informações relevantes
+								como possíveis registros de roubo ou furto, sinistros, passagem
+								por leilão, restrições, débitos, histórico de quilometragem,
+								entre outros indicadores importantes.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							Por que é importante consultar o histórico do veículo antes de
+							comprar? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Veículos usados e seminovos podem ter um histórico complexo
+								relacionado a proprietários anteriores. Isso pode incluir
+								registros de <b>sinistros, roubo ou furto, restrições
+									financeiras, débitos, multas, passagem por leilão ou outros
+									apontamentos relevantes</b>.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							O sistema busca veículos de todo o Brasil? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Sim. O <b>AUTO LAUDOS realiza consultas em bases de dados
+									nacionais</b>, permitindo a busca de informações de veículos
+								registrados em diferentes estados do país.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							Em quanto tempo o resultado da consulta fica disponível? <span
+								class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Na maioria dos casos, o relatório é gerado <b>em poucos
+									minutos após a confirmação do pagamento</b>. Em algumas situações
+								específicas pode haver um prazo maior para conclusão da
+								consulta.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							Minha consulta não foi gerada instantaneamente. Por que isso
+							acontece? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								O sistema do <b>AUTO LAUDOS realiza buscas em diversos
+									bancos de dados simultaneamente</b>. Em algumas situações, algum
+								desses sistemas pode estar temporariamente indisponível. O
+								relatório pode levar <b>até 48 horas</b> para ficar disponível
+								na sua <b>área do usuário</b>.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							A consulta mostra se o veículo tem sinistro, leilão ou roubo? <span
+								class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Sim. O relatório pode apresentar informações relacionadas a <b>sinistros,
+									passagem por leilão, registros de roubo ou furto</b>, entre outros
+								apontamentos relevantes.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							A consulta substitui uma vistoria física ou laudo cautelar
+							presencial? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Não. A consulta do <b>AUTO LAUDOS é uma análise baseada em
+									registros e bases de dados</b> e <b>não substitui uma vistoria
+									física, laudo cautelar presencial ou avaliação mecânica
+									especializada</b>.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							Os dados estão sempre atualizados? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Os dados apresentados refletem <b>as informações disponíveis
+									nas bases consultadas no momento da pesquisa</b>. Como diferentes
+								sistemas são utilizados, pode haver variações ou atualizações
+								posteriores nas bases de origem.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							O que é o histórico de quilometragem? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								É um conjunto de registros relacionados ao <b>odômetro do
+									veículo ao longo do tempo</b>, ajudando a identificar possíveis <b>inconsistências
+									ou indícios de adulteração de quilometragem</b>. Essas informações
+								<b>somente aparecem quando existem registros disponíveis nas
+									bases consultadas</b>.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							De onde vêm as fotos do veículo? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								Quando disponíveis, as fotos são obtidas a partir de <b>bases
+									de dados parceiras e registros de anúncios de veículos</b>. Caso
+								não existam registros de imagens para o veículo consultado, as
+								fotos não aparecerão no relatório.
+							</p>
+						</div>
+					</details>
+					<details class="faq-item">
+						<summary>
+							Quais são as formas de pagamento? <span class="icon">+</span>
+						</summary>
+						<div class="faq-content">
+							<p>
+								O <b>AUTO LAUDOS oferece formas de pagamento rápidas e
+									seguras</b>, sendo o <b>PIX uma das principais opções
+									disponíveis</b>.
+							</p>
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+
+	</section>
+</body>
+</html>

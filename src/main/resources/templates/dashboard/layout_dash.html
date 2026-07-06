@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+<title layout:title-pattern="$CONTENT_TITLE - Auto Laudos">Auto Laudos - Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" th:href="@{/dashboard/css/dashboard.css}" />
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<th:block layout:fragment="css"></th:block>
+</head>
+<body class="dash-body">
+
+	<div class="dash-wrapper">
+
+		<!-- SIDEBAR -->
+		<aside class="sidebar" id="sidebar">
+			<div class="sidebar-logo">
+				<img th:src="@{/dashboard/images/logo_rvm.png}" alt="Auto Laudos" />
+			</div>
+
+			<nav class="sidebar-nav">
+				<div class="nav-section-title">Menu</div>
+
+				<a th:href="@{/dashboard/consultas}" class="nav-item"
+					th:classappend="${activePage == 'consultas'} ? 'active' : ''">
+					<i class="fas fa-search"></i> <span>Consultas</span>
+				</a>
+
+				<div class="nav-section-title">Conta</div>
+
+				<a th:href="@{/dashboard/profile}" class="nav-item"
+					th:classappend="${activePage == 'meus-dados'} ? 'active' : ''">
+					<i class="fas fa-user-edit"></i> <span>Meus Dados</span>
+				</a> <a href="javascript:void(0)" class="nav-item nav-item-logout"
+					onclick="confirmarSaida()"> <i class="fas fa-sign-out-alt"></i>
+					<span>Sair</span>
+				</a>
+
+				<!-- Form oculto para logout seguro via POST -->
+				<form id="formLogout" th:action="@{/auth/logout}" method="post"
+					style="display: none;">
+					<input type="hidden" th:name="${_csrf.parameterName}"
+						th:value="${_csrf.token}" />
+				</form>
+			</nav>
+		</aside>
+
+		<!-- CONTEÚDO PRINCIPAL -->
+		<div class="dash-main">
+
+			<!-- HEADER -->
+			<header class="dash-header">
+				<button class="sidebar-toggle" onclick="toggleSidebar()">
+					<i class="fas fa-bars"></i>
+				</button>
+
+				<div class="dash-header-right">
+					<div class="user-info">
+						<div class="user-avatar">
+							<i class="fas fa-user"></i>
+						</div>
+						<div class="user-details">
+							<span class="user-name" sec:authentication="name">Usuário</span>
+							<span class="user-role">Minha conta</span>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<!-- CONTEÚDO DA PÁGINA -->
+			<main class="dash-content">
+				<th:block layout:fragment="content"></th:block>
+			</main>
+
+		</div>
+	</div>
+
+	<script th:src="@{/dashboard/js/dashboard.js}"></script>
+	<th:block layout:fragment="scripts"></th:block>
+
+</body>
+</html>

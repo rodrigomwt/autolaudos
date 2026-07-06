@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<!-- ===== MODAL PIX ===== -->
+	<div th:fragment="modalPix" id="modalPix"
+		style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .55); z-index: 9999; align-items: center; justify-content: center;">
+
+		<div
+			style="background: #fff; border-radius: 12px; padding: 32px; max-width: 420px; width: 90%; text-align: center; position: relative;">
+
+			<!-- Botão fechar -->
+			<button onclick="fecharModalPix()"
+				style="position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.4rem; cursor: pointer;">✕</button>
+
+			<h2 style="margin-bottom: 8px;">Pague via PIX</h2>
+			<p style="color: #666; font-size: .9rem; margin-bottom: 16px;">
+				Escaneie o QR Code ou copie o código abaixo</p>
+
+			<!-- Loading -->
+			<div id="pixLoading" style="padding: 24px;">
+				<p>⏳ Gerando QR Code...</p>
+			</div>
+
+			<!-- Expirado -->
+			<div id="pixExpirado" style="display: none; padding: 24px;">
+				<p style="color: #e53935;">⏰ QR Code expirado. Gere um novo
+					pagamento.</p>
+			</div>
+
+			<!-- Conteúdo principal -->
+			<div id="pixContent" style="display: none;">
+
+				<!-- QR Code -->
+				<img id="pixQrImg" src="" alt="QR Code PIX"
+					style="width: 200px; height: 200px; margin: 0 auto 16px; display: block; border: 1px solid #eee; border-radius: 8px;" />
+
+				<!-- Contador -->
+				<p style="font-size: .85rem; color: #888; margin-bottom: 12px;">
+					Expira em: <strong id="pixContador">10:00</strong>
+				</p>
+
+				<!-- Copia e cola -->
+				<div style="display: flex; gap: 8px; margin-bottom: 8px;">
+					<input id="pixCopyInput" type="text" readonly
+						style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: .8rem; background: #f9f9f9;" />
+					<button onclick="copiarPixCode()" class="btn-copiar-pix"
+						style="padding: 8px 14px; background: #4caf50; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: .85rem; transition: background 0.3s;">
+						Copiar</button>
+				</div>
+
+				<p style="font-size: .75rem; color: #aaa;">Após o pagamento, a
+					confirmação é automática.</p>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

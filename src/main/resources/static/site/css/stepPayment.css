@@ -1,0 +1,298 @@
+.payment-section {
+	padding: 150px 24px;
+	background: #f8fafc; /* Mesmo fundo das seções anteriores */
+}
+
+.payment-section .container {
+	max-width: 1280px;
+	margin: 0 auto;
+}
+
+.payment-section h1 {
+	text-align: center;
+	font-size: 32px;
+	font-weight: 800;
+	color: #1a1a2e;
+	margin-bottom: 8px;
+}
+
+.payment-section h1 span {
+	color: #2563eb;
+	position: relative;
+	display: inline-block;
+}
+
+/* Sublinhado decorativo — mesmo padrão */
+.payment-section h1 span::after {
+	content: '';
+	position: absolute;
+	bottom: 2px;
+	left: 0;
+	width: 100%;
+	height: 4px;
+	background: rgba(37, 99, 235, 0.2);
+	border-radius: 2px;
+}
+
+.payment-section .subtitle {
+	text-align: center;
+	font-size: 16px;
+	color: #64748b;
+	margin-bottom: 40px;
+}
+
+/* Card moderno — mesmo padrão das seções anteriores */
+.payment-card.card-modern {
+	background: #ffffff;
+	border-radius: 16px;
+	padding: 40px;
+	margin-bottom: 24px;
+	box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+	border-left: 6px solid #2563eb;
+	display: flex;
+	gap: 32px;
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+
+/* Colunas */
+.step-col {
+	flex: 1;
+	min-width: 220px;
+}
+
+/* Label de passo — mesmo estilo box-label das outras seções */
+.step-label {
+	font-size: 12px;
+	font-weight: 700;
+	color: #94a3b8;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 16px;
+	display: block;
+}
+
+/* Divisor vertical entre colunas */
+.col-divider {
+	width: 1px;
+	background: #e2e8f0;
+	align-self: stretch;
+	margin: 0;
+}
+
+/* Passo 1 - Formulário */
+.form-row {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.form-row input, .step-col-1 input[type="text"], .step-col-1 input[type="email"]
+	{
+	width: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 8px;
+	font-size: 14px;
+	background: #f8fafc;
+	color: #1e293b;
+	outline: none;
+	transition: border-color 0.2s, box-shadow 0.2s;
+	font-family: 'Inter', sans-serif;
+}
+
+.form-row input:focus, .step-col-1 input:focus {
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+	background: #fff;
+}
+
+.form-row input::placeholder, .step-col-1 input::placeholder {
+	color: #94a3b8;
+}
+
+.btn-confirmar {
+	width: 100%;
+	padding: 13px;
+	background: #94a3b8;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 4px;
+	transition: all 0.25s ease;
+	font-family: 'Inter', sans-serif;
+}
+
+.btn-confirmar:hover {
+	background: #64748b;
+}
+
+.btn-confirmar.active {
+	background: #2563eb;
+	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.btn-confirmar.active:hover {
+	background: #1d4ed8;
+	transform: translateY(-1px);
+}
+
+/* Passo 2 - QR Code */
+.step-col-2 {
+	flex: 0 0 160px;
+	min-width: 140px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.qr-box {
+	background: #1e293b; /* Mesmo tom escuro do laudo selecionado */
+	border-radius: 12px;
+	width: 150px;
+	height: 150px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #94a3b8;
+	font-size: 13px;
+	text-align: center;
+	gap: 8px;
+	overflow: hidden;
+}
+
+.qr-box img.qrcode-img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: none;
+	border-radius: 12px;
+}
+
+.qr-waiting {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+.qr-clock-icon {
+	font-size: 1.8rem;
+}
+
+/* Passo 3 - Status */
+.step-col-3 {
+	flex: 1.2;
+	min-width: 240px;
+}
+
+.status-field {
+	background: #f8fafc;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 12px 16px;
+	font-size: 14px;
+	color: #334155;
+	margin-bottom: 10px;
+	font-weight: 500;
+}
+
+.status-field span.status-value {
+	color: #2563eb;
+	font-weight: 700;
+}
+
+/* Rodapé de botões — idêntico às seções anteriores */
+.payment-footer {
+	display: flex;
+	gap: 20px;
+	margin-top: 8px;
+	flex-wrap: wrap;
+}
+
+.btn {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 18px 24px;
+	font-size: 16px;
+	font-weight: 700;
+	border: none;
+	border-radius: 12px;
+	cursor: pointer;
+	font-family: 'Inter', sans-serif;
+	transition: all 0.3s ease;
+}
+
+.btn-back {
+	background: #ffffff;
+	color: #64748b;
+	border: 1px solid #e2e8f0;
+}
+
+.btn-back:hover {
+	background: #f1f5f9;
+	color: #1e293b;
+}
+
+/* Botão de aguardando — mantém escuro mas com o mesmo border-radius */
+.btn-next {
+	background: #1e293b;
+	color: #fff;
+	cursor: default;
+}
+
+.btn-next .spinner {
+	width: 22px;
+	height: 22px;
+	border: 3px solid #334155;
+	border-top-color: #2563eb;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	flex-shrink: 0;
+}
+
+@keyframes spin {to { transform:rotate(360deg);	}}
+.footer-note {
+	text-align: center;
+	font-size: 13px;
+	color: #ef4444;
+	margin-top: 12px;
+}
+
+/* Responsivo */
+@media ( max-width : 768px) {
+	.payment-card.card-modern {
+		flex-direction: column;
+		padding: 24px;
+	}
+	.col-divider {
+		width: 100%;
+		height: 1px;
+		margin: 4px 0;
+	}
+	.step-col-2 {
+		flex: unset;
+		width: 100%;
+		align-items: flex-start;
+	}
+}
+
+@media ( max-width : 500px) {
+	.payment-footer {
+		flex-direction: column;
+	}
+	.form-row {
+		flex-direction: column;
+	}
+}

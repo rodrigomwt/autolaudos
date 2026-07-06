@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<div th:fragment="modalPix">
+
+		<!-- MODAL PIX -->
+		<div id="modalPix" class="pix-modal-overlay" style="display: none;">
+			<div class="pix-modal">
+
+				<button class="pix-modal-close" onclick="fecharModalPix()">✕</button>
+
+				<h2 class="pix-modal-title">
+					Pagamento via <span>PIX</span>
+				</h2>
+
+				<!-- Loading -->
+				<div id="pixLoading" class="pix-loading">
+					<div class="pix-spinner"></div>
+					<p>Gerando QR Code...</p>
+				</div>
+
+				<!-- Conteúdo -->
+				<div id="pixContent" style="display: none;">
+
+					<!-- Contador -->
+					<div class="pix-timer" id="pixTimer">
+						<i class="fas fa-clock"></i> <span>Expira em: </span> <strong
+							id="pixCountdown">10:00</strong>
+					</div>
+
+					<!-- QR Code -->
+					<div class="pix-qr-box">
+						<img id="pixQrImg" src="" alt="QR Code PIX" />
+					</div>
+
+					<!-- Copia e Cola -->
+					<div class="pix-copy-box">
+						<p class="pix-copy-label">Ou copie o código PIX:</p>
+						<div class="pix-copy-row">
+							<input type="text" id="pixCopyInput" readonly />
+							<button onclick="copiarPix()">
+								<i class="fas fa-copy"></i> Copiar
+							</button>
+						</div>
+						<span id="pixCopyMsg"
+							style="display: none; color: green; font-size: 13px;">✔
+							Copiado!</span>
+					</div>
+
+					<!-- Aviso -->
+					<p class="pix-aviso">
+						<i class="fas fa-info-circle"></i> Após o pagamento, aguarde
+						alguns instantes para a confirmação.
+					</p>
+				</div>
+
+				<!-- Expirado -->
+				<div id="pixExpirado" style="display: none;" class="pix-expirado">
+					<i class="fas fa-times-circle"></i>
+					<p>QR Code expirado. Feche e tente novamente.</p>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Script -->
+		<script>
+    let pixTimerInterval = null;
+
+    function abrirModalPix(btn) {
+        const paymentId       = btn.dataset.paymentId;
+        const userId          = btn.dataset.userId;
+        const userEmail       = btn.dataset.userEmail;
+        const userName        = btn.dataset.userName;
+        const planValue       = btn.dataset.planValue;
+        const planDescription = btn.dataset.planDescription;
+
+        document.getElementById('pixLoading').style.display  = 'block';
+        document.getElementById('pixContent').style.display  = 'none';
+        document.getElementById('pixExpirado').style.display = 'none';
+        document.getElementById('modalPix').style.display    = 'flex';
+        
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        fetch('/pagamento/gerar-pix-dash', {
+            method: 'POST',
+            eaders: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [csrfHeader]: csrfToken
+            },
+            body: new URLSearchParams({
+                paymentId, userId, userEmail, userName, planValue, planDescription
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                alert('Erro ao gerar PIX: ' + data.error);
+                fecharModalPix();
+                return;
+            }
+
+            document.getElementById('pixQrImg').src       = 'data:image/png;base64,' + data.qrCodeBase64;
+            document.getElementById('pixCopyInput').value = data.qrCode;
+
+            document.getElementById('pixLoading').style.display = 'none';
+            document.getElementById('pixContent').style.display = 'block';
+
+            iniciarContador(10 * 60);
+        })
+        .catch(() => {
+            alert('Erro de conexão. Tente novamente.');
+            fecharModalPix();
+        });
+    }
+
+    function iniciarContador(segundos) {
+        clearInterval(pixTimerInterval);
+        const el    = document.getElementById('pixCountdown');
+        const timer = document.getElementById('pixTimer');
+
+        pixTimerInterval = setInterval(() => {
+            const min = String(Math.floor(segundos / 60)).padStart(2, '0');
+            const sec = String(segundos % 60).padStart(2, '0');
+            el.textContent = `${min}:${sec}`;
+
+            if (segundos <= 60) timer.classList.add('expirando');
+
+            if (segundos <= 0) {
+                clearInterval(pixTimerInterval);
+                document.getElementById('pixContent').style.display  = 'none';
+                document.getElementById('pixExpirado').style.display = 'block';
+            }
+
+            segundos--;
+        }, 1000);
+    }
+
+    function fecharModalPix() {
+        clearInterval(pixTimerInterval);
+        document.getElementById('modalPix').style.display = 'none';
+    }
+
+    function copiarPix() {
+        const input = document.getElementById('pixCopyInput');
+        navigator.clipboard.writeText(input.value).then(() => {
+            const msg = document.getElementById('pixCopyMsg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 2500);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('modalPix').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalPix();
+        });
+    });
+    </script>
+
+	</div>
+
+</body>
+</html>

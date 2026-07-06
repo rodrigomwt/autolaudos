@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{site/layout_site}">
+
+<head>
+<title>Auto Laudos - Escolha do Laudo</title>
+
+<link rel="stylesheet" th:href="@{/site/css/step2.css}">
+<script th:src="@{/site/js/step2.js}" defer></script>
+</head>
+
+<body>
+	<section layout:fragment="content">
+
+		<!-- Input hidden com a placa -->
+		<input type="text" id="placaVeiculo" th:value="${placa}"
+			style="display: none" readonly />
+
+		<section class="section-step2">
+			<div class="container">
+				<h1 class="section-title">
+					Faça a <span>escolha do laudo</span> desejado:
+				</h1>
+				<p class="section-subtitle">Aqui está nossa lista de laudos
+					disponíveis, revise as informações contidas por laudo e selecione o
+					melhor para você.</p>
+
+				<div class="card card-modern">
+					<!-- Lista de Laudos -->
+					<div class="laudos-list">
+						<span class="box-label">Seleção do laudo:</span>
+
+						<div th:each="plano, stat : ${planos}" class="laudo-item"
+							th:classappend="${stat.first} ? 'selected'"
+							th:data-id="${plano.id}" onclick="selecionarLaudo(this)">
+
+							<div class="laudo-info">
+								<span class="laudo-nome" th:text="${plano.nome}"></span> <span
+									class="badge-recomendado" th:if="${plano.recomendado}">Recomendado</span>
+							</div>
+
+							<div style="display: flex; align-items: center; gap: 12px;">
+								<span class="laudo-preco"
+									th:text="${'R$ ' + #numbers.formatDecimal(plano.preco, 1, 2, 'COMMA')}"></span>
+								<div class="laudo-check"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Descrição do Laudo -->
+					<div class="descricao-box">
+						<span class="box-label">Descrição do laudo:</span>
+						<div id="descricao-content"></div>
+					</div>
+				</div>
+
+				<!-- Botões -->
+				<div class="actions">
+					<button class="btn btn-back" onclick="voltarStep1()">
+						<span class="arrow">←</span> Voltar para informações do veículo
+					</button>
+					<button class="btn btn-next" onclick="stepPayment()">
+						Prosseguir para cadastro e pagamento <span class="arrow">→</span>
+					</button>
+				</div>
+			</div>
+		</section>
+
+	</section>
+</body>
+</html>

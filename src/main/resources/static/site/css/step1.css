@@ -1,0 +1,154 @@
+.section-veiculo {
+    padding: 150px 24px;
+    background: #f8fafc; /* Um cinza azulado bem clarinho para destacar o card branco */
+}
+
+.section-veiculo .container {
+    max-width: 1280px; /* Reduzi um pouco a largura para o card não ficar tão esticado */
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.section-title span {
+    color: #2563eb;
+    position: relative;
+    display: inline-block;
+}
+
+/* Detalhe visual opcional: uma linha sutil abaixo da palavra sucesso */
+.section-title span::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(37, 99, 235, 0.2);
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 40px;
+}
+
+/* NOVO CARD: Branco com sombra suave e borda esquerda colorida */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); /* Sombra elegante */
+    border-left: 6px solid #2563eb; /* Borda de destaque lateral */
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 25px 0;
+}
+
+.fields-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+}
+
+.fields-grid-row2 {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
+}
+
+/* Mudança de input para spans para parecer um relatório e menos um formulário editável */
+.field-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.field-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    word-break: break-all;
+}
+
+.buttons-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 32px;
+}
+
+.btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-back {
+    background: #ffffff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-back:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.btn-next {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+}
+
+.btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    background: #1d4ed8;
+}
+
+@media (max-width: 850px) {
+    .fields-grid, .fields-grid-row2 {
+        grid-template-columns: 1fr 1fr; /* 2 colunas no tablet */
+    }
+}
+
+@media (max-width: 500px) {
+    .fields-grid, .fields-grid-row2 {
+        grid-template-columns: 1fr; /* 1 coluna no celular */
+    }
+    .card-modern {
+        padding: 24px;
+    }
+    .buttons-row {
+        flex-direction: column;
+    }
+}

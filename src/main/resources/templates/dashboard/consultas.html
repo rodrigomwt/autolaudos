@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{dashboard/layout_dash}">
+
+<head>
+<title>Consultas</title>
+<link rel="stylesheet" th:href="@{/dashboard/css/consultas.css}" />
+</head>
+
+<body>
+	<main layout:fragment="content">
+
+		<div class="dash-page-title">
+			Minhas <span>Consultas</span>
+		</div>
+
+		<!-- FILTRO -->
+		<div class="dash-card filter-card">
+			<form method="get" th:action="@{/dashboard/consultas}"
+				class="filter-form">
+				<div class="filter-group">
+					<label>Buscar por placa</label>
+					<div class="input-wrapper">
+						<i class="fas fa-search icon-left"></i> <input type="text"
+							name="placa" th:value="${filtroPlaca}" placeholder="Ex: ABC1234"
+							maxlength="8" oninput="this.value = this.value.toUpperCase()"
+							style="margin-left: 10px" />
+					</div>
+				</div>
+				<div class="filter-actions">
+					<button type="submit" class="btn-filter">
+						<i class="fas fa-filter"></i> Filtrar
+					</button>
+					<a th:href="@{/dashboard/consultas}" class="btn-filter-clear">
+						<i class="fas fa-times"></i> Limpar
+					</a>
+				</div>
+			</form>
+		</div>
+
+		<!-- TABELA -->
+		<div class="dash-card" style="margin-top: 20px;">
+			<div class="dash-card-title">
+				Consultas realizadas <span class="total-badge"
+					th:text="'Total: ' + ${page.totalElements}">Total: 0</span>
+			</div>
+
+			<div class="table-wrapper">
+				<table class="dash-table">
+					<thead>
+						<tr>
+							<th>Placa</th>
+							<th>Plano</th>
+							<th>Pagamento</th>
+							<th>Status do Pedido</th>
+							<th>Data / HORA</th>
+							<th>Ação</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="order : ${page.content}">
+
+							<!-- Placa -->
+							<td><span class="placa-tag" th:text="${order.licensePlate}">ABC1234</span>
+							</td>
+
+							<!-- Plano -->
+							<td th:text="${order.plan}">Completo</td>
+
+							<!-- Status Pagamento -->
+							<td><span
+								th:class="'badge ' + ${order.paymentStatusBadgeClass}"
+								th:text="${order.paymentStatusLabel}">Aprovado</span></td>
+
+							<!-- Status Pedido -->
+							<td><span
+								th:class="'badge ' + ${order.orderStatusBadgeClass}"
+								th:text="${order.orderStatusLabel}">Finalizado</span></td>
+
+							<!-- Data -->
+							<td
+								th:text="${#temporals.format(order.createDate, 'dd/MM/yyyy HH:mm')}">
+								01/01/2025</td>
+
+							<!-- Ação -->
+							<td>
+								<!-- Laudo disponível --> <a
+								th:if="${order.orderStatus.name() == 'FINISHED'}"
+								th:data-laudo-id="${order.id}" href="javascript:void(0)"
+								class="btn-laudo" onclick="abrirLaudo(this)"> <i
+									class="fas fa-file-pdf"></i> Laudo
+							</a> <!-- Pagamento pendente -->
+								<button
+									th:if="${order.paymentStatus == 'PENDING' and order.orderStatus.name() != 'FINISHED'}"
+									class="btn-pagar" th:data-payment-id="${order.paymentId}"
+									th:data-user-id="${order.userId}"
+									th:data-user-email="${order.userEmail}"
+									th:data-user-name="${order.userName}"
+									th:data-plan-value="${order.planValue}"
+									th:data-plan-description="${order.planDescription}"
+									onclick="abrirModalPix(this)">
+									<i class="fas fa-credit-card"></i> Pagar
+								</button> <!-- Sem ação --> <span
+								th:if="${order.orderStatus.name() != 'FINISHED' and order.paymentStatus != 'PENDING'}"
+								class="sem-acao">—</span>
+							</td>
+						</tr>
+
+						<tr th:if="${page.totalElements == 0}">
+							<td colspan="6" class="empty-state"><i class="fas fa-inbox"></i>
+								<p>Nenhuma consulta encontrada.</p></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- PAGINAÇÃO -->
+			<div class="pagination-wrapper" th:if="${page.totalPages > 1}">
+				<div class="pagination-info">
+					Exibindo <strong th:text="${page.number * page.size + 1}">1</strong>
+					– <strong
+						th:text="${page.number * page.size + page.numberOfElements}">10</strong>
+					de <strong th:text="${page.totalElements}">0</strong>
+				</div>
+				<div class="pagination-controls">
+
+					<!-- Anterior -->
+					<a
+						th:href="@{/dashboard/consultas(page=${page.number - 1}, placa=${filtroPlaca})}"
+						class="page-btn" th:classappend="${page.first} ? 'disabled' : ''">
+						<i class="fas fa-chevron-left"></i>
+					</a>
+
+					<!-- Números -->
+					<th:block
+						th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+						<a
+							th:href="@{/dashboard/consultas(page=${i}, placa=${filtroPlaca})}"
+							class="page-btn"
+							th:classappend="${i == page.number} ? 'active' : ''"
+							th:text="${i + 1}">1</a>
+					</th:block>
+
+					<!-- Próximo -->
+					<a
+						th:href="@{/dashboard/consultas(page=${page.number + 1}, placa=${filtroPlaca})}"
+						class="page-btn" th:classappend="${page.last} ? 'disabled' : ''">
+						<i class="fas fa-chevron-right"></i>
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+		<div th:replace="~{dashboard/fragments/modal_payment :: modalPix}"></div>
+	</main>
+</body>
+</html>
