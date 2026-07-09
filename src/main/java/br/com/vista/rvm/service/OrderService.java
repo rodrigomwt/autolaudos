@@ -15,6 +15,7 @@ import br.com.vista.rvm.entity.Order;
 import br.com.vista.rvm.entity.enums.OrderStatus;
 import br.com.vista.rvm.event.PaymentApprovedEvent;
 import br.com.vista.rvm.repository.OrderRepository;
+import br.com.vista.rvm.supplier.checktudo.service.CheckTudoService;
 import br.com.vista.rvm.supplier.conferi.service.ConferiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class OrderService {
 	private final PaymentService paymentService;
 	private final ConferiService conferiService;
 	private final ObjectMapper objectMapper;
+	private final CheckTudoService checkTudoService;
 
 	public Order create(Long userId, Long planId, Long paymentId, String licensePlate, String gateway, String product) {
 		var user = userService.findById(userId);
@@ -104,6 +106,17 @@ public class OrderService {
 		}
 
 		return conferi.getPdf().getLinkPdf();
+	}
+	
+	public String gerarLaudoChecktudo(Long orderId) {
+		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order não encontrada: " + orderId));
+
+		if (order.getQueryCode() == null || order.getQueryCode().isBlank()) {
+			throw new RuntimeException("Order sem código de consulta: " + orderId);
+		}
+		
+		return checkTudoService.getLaudo(order.getLicensePlate().replace("-", ""), Integer.parseInt(order.getQueryCode()));
+
 	}
 
 	@EventListener

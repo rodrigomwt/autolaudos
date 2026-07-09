@@ -35,28 +35,5 @@ function confirmarSaida() {
 
 function abrirLaudo(el) {
     const id = el.getAttribute('data-laudo-id');
-
-    fetch('/dashboard/consultas/laudo/' + id)
-        .then(res => res.json())
-        .then(data => {
-            if (data.pendente) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Processando Laudo',
-                    text: 'O PDF ainda está sendo gerado pelo nosso provedor. Por favor, tente novamente em alguns minutos.',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'Entendido'
-                });
-            } else {
-                window.open(data.url, '_blank');
-            }
-        })
-        .catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro ao buscar laudo',
-                text: 'Não foi possível carregar o laudo. Tente novamente em instantes.',
-                confirmButtonColor: '#3085d6'
-            });
-        });
+    window.location.href = '/dashboard/consultas/laudo/' + id;
 }

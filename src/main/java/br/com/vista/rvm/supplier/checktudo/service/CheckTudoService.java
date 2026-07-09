@@ -45,7 +45,7 @@ public class CheckTudoService {
         headers.set("Cache-Control", "no-cache");
         headers.set("Accept", "*/*");
 
-        CheckTudoAgregadosRequestDTO request = new CheckTudoAgregadosRequestDTO(placa);
+        CheckTudoAgregadosRequestDTO request = new CheckTudoAgregadosRequestDTO(placa, 1);
         HttpEntity<CheckTudoAgregadosRequestDTO> entity = new HttpEntity<>(request, headers);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -53,6 +53,32 @@ public class CheckTudoService {
                 baseUrl + "/api/vehicle/" + userId,
                 entity,
                 CheckTudoAgregadosResponseDTO.class
+        );
+    }
+	
+	public String getLaudo(String placa, int queryCode) {
+        var login = checkTudoClient.login(
+                CheckTudoLoginRequestDTO.builder().username(usuario).password(senha).build()
+        );
+
+        String token = login.getBody().getToken();
+        String userId = login.getBody().getUser().getId();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("authorization", token);
+        headers.set("User-Agent", "PostmanRuntime/7.51.1");
+        headers.set("Cache-Control", "no-cache");
+        headers.set("Accept", "*/*");
+
+        CheckTudoAgregadosRequestDTO request = new CheckTudoAgregadosRequestDTO(placa, queryCode);
+        HttpEntity<CheckTudoAgregadosRequestDTO> entity = new HttpEntity<>(request, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.postForObject(
+                baseUrl + "/api/vehicle/" + userId,
+                entity,
+                String.class
         );
     }
 

@@ -1,0 +1,800 @@
+@charset "UTF-8";
+
+/* ===== BOTÃO DE IMPRESSÃO ===== */
+.laudo-print-header {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 20px;
+}
+
+.btn-print {
+	background: linear-gradient(135deg, #1e90ff 0%, #1565c0 100%);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	padding: 12px 24px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 12px rgba(30, 144, 255, 0.3);
+	transition: all 0.3s ease;
+}
+
+.btn-print:hover {
+	background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+	box-shadow: 0 6px 16px rgba(30, 144, 255, 0.4);
+	transform: translateY(-2px);
+}
+
+.btn-print:active {
+	transform: translateY(0);
+}
+
+.btn-print i {
+	font-size: 16px;
+}
+
+/* ===== ESTILOS PARA IMPRESSÃO ===== */
+@media print {
+	/* Ocultar elementos de navegação e UI */
+	body > header,
+	body > nav,
+	.sidebar,
+	.topbar,
+	.navbar,
+	.dash-sidebar,
+	.dash-topbar,
+	.btn-print,
+	.laudo-print-header,
+	#laudoLoading,
+	#laudoErro {
+		display: none !important;
+	}
+
+	/* Ajustar layout para impressão */
+	body {
+		margin: 0;
+		padding: 0;
+		background: #fff;
+	}
+
+	main {
+		margin: 0 !important;
+		padding: 0 !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	/* Forçar cores de fundo para impressão */
+	* {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		color-adjust: exact !important;
+	}
+
+	/* Ajustar margens da página */
+	@page {
+		margin: 2cm;
+		size: A4;
+	}
+
+	/* Evitar quebras de página dentro dos cards */
+	.laudo-card,
+	.laudo-hero,
+	.risco-card,
+	.gravame-item,
+	.prop-item {
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
+
+	/* Ajustar grid para impressão */
+	.laudo-grid-2 {
+		grid-template-columns: 1fr 1fr;
+		gap: 15px;
+	}
+
+	/* Garantir que badges e cores sejam impressas */
+	.badge-premium,
+	.status-item,
+	.debito-row,
+	.gravame-badge,
+	.risco-score-circle {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
+
+	/* Ajustar fontes para impressão */
+	body {
+		font-size: 12pt;
+		line-height: 1.4;
+	}
+
+	.laudo-card-title {
+		font-size: 11pt;
+	}
+
+	/* Remover sombras para economia de tinta */
+	.laudo-card,
+	.laudo-hero,
+	.btn-print {
+		box-shadow: none !important;
+	}
+
+	/* Adicionar bordas leves aos cards para delimitação */
+	.laudo-card {
+		border: 1px solid #e0e6ed;
+	}
+
+	/* Garantir que gráficos sejam impressos */
+	.fipe-chart-wrapper canvas {
+		max-width: 100% !important;
+		height: auto !important;
+	}
+}
+
+
+/* ===== RESET / BASE ===== */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+/* ===== HERO CARD ===== */
+.laudo-hero {
+	background: linear-gradient(135deg, #0f1923 0%, #1a2a3a 100%);
+	border-radius: 12px;
+	padding: 28px 32px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-bottom: 24px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.laudo-hero-left {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.laudo-placa-box {
+	background: #fff;
+	border-radius: 8px;
+	padding: 10px 20px;
+	text-align: center;
+	min-width: 130px;
+	border: 3px solid #1e90ff;
+}
+
+.laudo-placa-box .placa-label {
+	font-size: 10px;
+	color: #888;
+	font-weight: 700;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+}
+
+.laudo-placa-box .placa-value {
+	font-size: 26px;
+	font-weight: 900;
+	color: #0f1923;
+	letter-spacing: 3px;
+}
+
+.laudo-hero-info h2 {
+	color: #fff;
+	font-size: 20px;
+	font-weight: 700;
+	margin-bottom: 6px;
+}
+
+.laudo-hero-info .hero-meta {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.hero-meta-item {
+	color: #7a8fa6;
+	font-size: 13px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.hero-meta-item span {
+	color: #b0c4d8;
+	font-weight: 600;
+}
+
+.laudo-hero-right {
+	text-align: right;
+}
+
+.fipe-label {
+	color: #7a8fa6;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.fipe-value {
+	color: #1e90ff;
+	font-size: 28px;
+	font-weight: 800;
+}
+
+.fipe-sub {
+	color: #4a6070;
+	font-size: 11px;
+	margin-top: 2px;
+}
+
+.badge-premium {
+	display: inline-block;
+	background: linear-gradient(90deg, #f0a500, #f5c842);
+	color: #0f1923;
+	font-size: 10px;
+	font-weight: 800;
+	padding: 3px 10px;
+	border-radius: 20px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	margin-bottom: 8px;
+}
+
+/* ===== SECTION GRID ===== */
+.laudo-grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin-bottom: 20px;
+}
+
+@media ( max-width : 768px) {
+	.laudo-grid-2 {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ===== CARDS ===== */
+.laudo-card {
+	background: #fff;
+	border-radius: 10px;
+	padding: 20px 24px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	margin-bottom: 20px;
+}
+
+.laudo-card-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: #0f1923;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 16px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #f0f2f5;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.laudo-card-title i {
+	color: #1e90ff;
+}
+
+/* ===== RISCO CARD ===== */
+.risco-card {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.risco-score-circle {
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28px;
+	font-weight: 900;
+	flex-shrink: 0;
+}
+
+.risco-score-circle.baixo {
+	background: #e8f8f0;
+	color: #27ae60;
+	border: 3px solid #27ae60;
+}
+
+.risco-score-circle.medio {
+	background: #fff8e1;
+	color: #f0a500;
+	border: 3px solid #f0a500;
+}
+
+.risco-score-circle.alto {
+	background: #fdecea;
+	color: #e74c3c;
+	border: 3px solid #e74c3c;
+}
+
+.risco-info h3 {
+	font-size: 15px;
+	font-weight: 700;
+	color: #0f1923;
+	margin-bottom: 4px;
+}
+
+.risco-info p {
+	font-size: 13px;
+	color: #5a6a7a;
+}
+
+/* ===== INFO TABLE ===== */
+.info-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.info-table tr {
+	border-bottom: 1px solid #f0f2f5;
+}
+
+.info-table tr:last-child {
+	border-bottom: none;
+}
+
+.info-table td {
+	padding: 8px 4px;
+	font-size: 13px;
+}
+
+.info-table td:first-child {
+	color: #7a8fa6;
+	font-weight: 600;
+	width: 45%;
+}
+
+.info-table td:last-child {
+	color: #0f1923;
+	font-weight: 500;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 10px;
+}
+
+.status-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.status-item.ok {
+	background: #e8f8f0;
+	color: #27ae60;
+}
+
+.status-item.warn {
+	background: #fff8e1;
+	color: #e67e22;
+}
+
+.status-item.alert {
+	background: #fdecea;
+	color: #e74c3c;
+}
+
+.status-item i {
+	font-size: 14px;
+}
+
+/* ===== DÉBITOS ===== */
+.debito-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	border-radius: 8px;
+	margin-bottom: 8px;
+	font-size: 13px;
+}
+
+.debito-row.ok {
+	background: #e8f8f0;
+}
+
+.debito-row.alert {
+	background: #fdecea;
+}
+
+.debito-row .debito-label {
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.debito-row .debito-valor {
+	font-weight: 700;
+}
+
+.debito-row.ok    .debito-label {
+	color: #27ae60;
+}
+
+.debito-row.ok    .debito-valor {
+	color: #27ae60;
+}
+
+.debito-row.alert .debito-label {
+	color: #e74c3c;
+}
+
+.debito-row.alert .debito-valor {
+	color: #e74c3c;
+}
+
+/* ===== LEILÃO ===== */
+.leilao-scores {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-bottom: 16px;
+}
+
+.leilao-score-box {
+	flex: 1;
+	min-width: 120px;
+	background: #f7f9fc;
+	border-radius: 8px;
+	padding: 12px 16px;
+	text-align: center;
+}
+
+.leilao-score-box .ls-label {
+	font-size: 11px;
+	color: #7a8fa6;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.leilao-score-box .ls-value {
+	font-size: 22px;
+	font-weight: 800;
+	color: #1e90ff;
+	margin-top: 4px;
+}
+
+.leilao-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12px;
+}
+
+.leilao-table th {
+	background: #f7f9fc;
+	color: #7a8fa6;
+	font-weight: 700;
+	padding: 8px 10px;
+	text-align: left;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.leilao-table td {
+	padding: 8px 10px;
+	border-bottom: 1px solid #f0f2f5;
+	color: #333;
+}
+
+.leilao-table tr:last-child td {
+	border-bottom: none;
+}
+
+/* ===== GRAVAME ===== */
+.gravame-item {
+	border: 1px solid #e8ecf0;
+	border-radius: 8px;
+	padding: 14px 16px;
+	margin-bottom: 10px;
+}
+
+.gravame-item:last-child {
+	margin-bottom: 0;
+}
+
+.gravame-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.gravame-agente {
+	font-weight: 700;
+	color: #0f1923;
+	font-size: 14px;
+}
+
+.gravame-badge {
+	font-size: 11px;
+	font-weight: 700;
+	padding: 3px 10px;
+	border-radius: 20px;
+}
+
+.gravame-badge.baixado {
+	background: #e8f8f0;
+	color: #27ae60;
+}
+
+.gravame-badge.ativo {
+	background: #fdecea;
+	color: #e74c3c;
+}
+
+.gravame-meta {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.gravame-meta span {
+	font-size: 12px;
+	color: #7a8fa6;
+}
+
+.gravame-meta span b {
+	color: #333;
+}
+
+/* ===== FIPE CHART ===== */
+.fipe-chart-wrapper {
+	height: 220px;
+	position: relative;
+}
+
+/* ===== PROPRIETÁRIOS / KM ===== */
+.prop-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 0;
+	border-bottom: 1px solid #f0f2f5;
+}
+
+.prop-item:last-child {
+	border-bottom: none;
+}
+
+.prop-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: #e8f0fe;
+	color: #1e90ff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 15px;
+	flex-shrink: 0;
+}
+
+.prop-info .prop-name {
+	font-weight: 700;
+	font-size: 13px;
+	color: #0f1923;
+}
+
+.prop-info .prop-meta {
+	font-size: 12px;
+	color: #7a8fa6;
+}
+
+/* ===== REVISÃO ===== */
+.revisao-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 16px;
+}
+
+.revisao-tab-btn {
+	padding: 6px 14px;
+	border: 2px solid #e0e6ed;
+	border-radius: 20px;
+	background: #fff;
+	font-size: 12px;
+	font-weight: 700;
+	color: #7a8fa6;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.revisao-tab-btn.active {
+	background: #1e90ff;
+	border-color: #1e90ff;
+	color: #fff;
+}
+
+.revisao-body {
+	display: none;
+}
+
+.revisao-body.active {
+	display: block;
+}
+
+.revisao-info-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.revisao-info-item {
+	background: #f7f9fc;
+	border-radius: 8px;
+	padding: 10px 14px;
+}
+
+.revisao-info-label {
+	font-size: 11px;
+	color: #7a8fa6;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.revisao-info-value {
+	font-size: 16px;
+	font-weight: 800;
+	color: #0f1923;
+	margin-top: 2px;
+}
+
+.revisao-sub-title {
+	font-size: 12px;
+	font-weight: 700;
+	color: #0f1923;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.revisao-sub-title i {
+	color: #1e90ff;
+}
+
+.revisao-pecas-list, .revisao-insp-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.revisao-peca-tag {
+	background: #fff3e0;
+	color: #e67e22;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 20px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.revisao-insp-tag {
+	background: #e8f0fe;
+	color: #1e90ff;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 20px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+/* ===== ACESSÓRIOS ===== */
+.acessorios-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 8px;
+}
+
+.acessorio-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	color: #333;
+	padding: 6px 10px;
+	background: #f7f9fc;
+	border-radius: 6px;
+}
+
+.acessorio-item i {
+	color: #27ae60;
+	font-size: 13px;
+	flex-shrink: 0;
+}
+
+/* ===== PAGE TITLE ===== */
+.dash-page-title {
+	font-size: 22px;
+	font-weight: 800;
+	color: #0f1923;
+	margin-bottom: 20px;
+}
+
+.dash-page-title span {
+	color: #1e90ff;
+}
+
+.laudo-loading {
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+}
+
+.laudo-loading-box {
+	background: #fff;
+	border-radius: 18px;
+	padding: 32px 28px;
+	width: 100%;
+	max-width: 420px;
+	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+	text-align: center;
+}
+
+.laudo-loading-box h3 {
+	margin: 16px 0 8px;
+	font-size: 22px;
+	color: #0f172a;
+}
+
+.laudo-loading-box p {
+	margin: 0;
+	color: #64748b;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.spinner {
+	width: 54px;
+	height: 54px;
+	margin: 0 auto;
+	border: 5px solid #e2e8f0;
+	border-top: 5px solid #2563eb;
+	border-radius: 50%;
+	animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {to { transform:rotate(360deg);}}

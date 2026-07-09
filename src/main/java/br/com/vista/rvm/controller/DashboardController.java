@@ -1,6 +1,5 @@
 package br.com.vista.rvm.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -66,21 +65,53 @@ public class DashboardController {
 
 	}
 
+//	@GetMapping("/consultas/laudo/{id}")
+//	@ResponseBody
+//	public ResponseEntity<Map<String, Object>> gerarLaudoConferi(@PathVariable Long id) {
+//		String linkPdf = orderService.gerarLaudoPdf(id);
+//
+//		Map<String, Object> response = new HashMap<>();
+//
+//		if (linkPdf == null) {
+//			response.put("pendente", true);
+//		} else {
+//			response.put("pendente", false);
+//			response.put("url", linkPdf);
+//		}
+//
+//		return ResponseEntity.ok(response);
+//	}
+	
 	@GetMapping("/consultas/laudo/{id}")
+	public String abrirPaginaLaudo(@PathVariable Long id, Model model) {
+	    model.addAttribute("laudoId", id);
+	    model.addAttribute("activePage", "laudo");
+	    return "dashboard/laudo";
+	}
+	
+	@GetMapping("/consultas/laudo/{id}/dados")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> gerarLaudoPdf(@PathVariable Long id) {
-		String linkPdf = orderService.gerarLaudoPdf(id);
+	public ResponseEntity<?> buscarDadosLaudo(@PathVariable Long id) {
+	    try {
+	        String laudo = orderService.gerarLaudoChecktudo(id);
 
-		Map<String, Object> response = new HashMap<>();
+	        if (laudo == null || laudo.isBlank()) {
+	            return ResponseEntity.ok(Map.of(
+	                "pendente", true
+	            ));
+	        }
 
-		if (linkPdf == null) {
-			response.put("pendente", true);
-		} else {
-			response.put("pendente", false);
-			response.put("url", linkPdf);
-		}
+	        return ResponseEntity.ok(Map.of(
+	            "pendente", false,
+	            "laudo", laudo
+	        ));
 
-		return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        return ResponseEntity.internalServerError().body(Map.of(
+	            "erro", true,
+	            "mensagem", "Não foi possível carregar o laudo."
+	        ));
+	    }
 	}
 	
 	@GetMapping("/profile")
