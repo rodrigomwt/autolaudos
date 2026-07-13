@@ -33,7 +33,7 @@ public class OrderService {
 	private final ObjectMapper objectMapper;
 	private final CheckTudoService checkTudoService;
 
-	public Order create(Long userId, Long planId, Long paymentId, String licensePlate, String gateway, String product) {
+	public Order create(Long userId, Long planId, Long paymentId, String licensePlate, String gateway, String product, String code) {
 		var user = userService.findById(userId);
 		var plan = planService.findById(planId);
 		var payment = paymentService.findById(paymentId);
@@ -46,6 +46,7 @@ public class OrderService {
 		order.setGateway(gateway);
 		order.setProduct(product);
 		order.setStatus(OrderStatus.CREATED);
+		order.setQueryCode(code);
 
 		return orderRepository.save(order);
 	}
@@ -115,8 +116,13 @@ public class OrderService {
 			throw new RuntimeException("Order sem código de consulta: " + orderId);
 		}
 		
-		return checkTudoService.getLaudo(order.getLicensePlate().replace("-", ""), Integer.parseInt(order.getQueryCode()));
-
+		if(order.getQueryResult() == null) { 
+			var report = checkTudoService.getLaudo(order.getLicensePlate().replace("-", ""), Integer.parseInt(order.getQueryCode()));
+			order.setQueryResult(report);
+			orderRepository.save(order);
+		}
+		
+		return order.getQueryResult();
 	}
 
 	@EventListener

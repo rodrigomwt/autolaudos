@@ -1,9 +1,9 @@
 package br.com.vista.rvm.dto.enums;
 
 public enum Plans {
-	PREMIUM("premium", "Auto Laudos Premium", "conferi-auto-completa", 67.00, true),
-	COMPLETA("completa", "Auto Laudos Completa", "conferi-auto-pericia-gold", 57.00, false),
-	ESSENCIAL("essencial", "Auto Laudos Essencial", "conferi-auto-pericia-plus", 47.00, false);
+	PREMIUM("premium", "Auto Laudos Premium", "65", 67.00, true),
+	COMPLETA("completa", "Auto Laudos Completa", "66", 57.00, false),
+	ESSENCIAL("essencial", "Auto Laudos Essencial", "67", 47.00, false);
 
 	private final String id;
 	private final String nome;
