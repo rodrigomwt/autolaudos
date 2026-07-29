@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CheckTudoAgregadosRequestDTO {
+public class CheckTudoRequestDTO {
 
 	private int querycode;
 	private Map<String, String> keys;
 	private boolean duplicity = true;
 
-	public CheckTudoAgregadosRequestDTO(String placa, int querycode) {
+	public CheckTudoRequestDTO(String placa, int querycode) {
 		this.keys = Map.of("placa", placa);
 		this.querycode = querycode;
 	}

@@ -119,7 +119,7 @@ public class PagamentoController {
 	                return ResponseEntity.ok().build(); // ✅ idempotência
 	            }
 
-	            orderService.gerarLaudo(order.get().getId());
+	            orderService.requestReport(order.get().getId());
 	        }
 
 	    } catch (Exception e) {

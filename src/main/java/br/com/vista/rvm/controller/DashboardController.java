@@ -64,23 +64,6 @@ public class DashboardController {
 		}
 
 	}
-
-//	@GetMapping("/consultas/laudo/{id}")
-//	@ResponseBody
-//	public ResponseEntity<Map<String, Object>> gerarLaudoConferi(@PathVariable Long id) {
-//		String linkPdf = orderService.gerarLaudoPdf(id);
-//
-//		Map<String, Object> response = new HashMap<>();
-//
-//		if (linkPdf == null) {
-//			response.put("pendente", true);
-//		} else {
-//			response.put("pendente", false);
-//			response.put("url", linkPdf);
-//		}
-//
-//		return ResponseEntity.ok(response);
-//	}
 	
 	@GetMapping("/consultas/laudo/{id}")
 	public String abrirPaginaLaudo(@PathVariable Long id, Model model) {
