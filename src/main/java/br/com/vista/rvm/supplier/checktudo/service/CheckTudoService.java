@@ -56,14 +56,12 @@ public class CheckTudoService {
     }
 	
 	public CheckTudoReportResponseDTO requestReport(String placa, int queryCode) {
-        var login = checkTudoClient.login(
-                CheckTudoLoginRequestDTO.builder().username(usuario).password(senha).build()
-        );
+        var login = checkTudoClient.login(CheckTudoLoginRequestDTO.builder().username(usuario).password(senha).build());
 
         String token = login.getBody().getToken();
-        //String userId = login.getBody().getUser().getId();
+        String userId = login.getBody().getUser().getId();
         
-        return checkTudoClient.requestReport(token, new CheckTudoRequestDTO(placa, queryCode));
+        return checkTudoClient.requestReport(token, userId, new CheckTudoRequestDTO(placa, queryCode));
 
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_JSON);

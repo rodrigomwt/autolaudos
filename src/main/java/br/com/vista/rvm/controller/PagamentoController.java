@@ -54,12 +54,10 @@ public class PagamentoController {
 		try {
 			var pixResponse = mercadoPagoService.criarPagamentoPix(request);
 			var plan = planService.create(user.getId(), planSession.getNome(), planSession.getNome(), BigDecimal.valueOf(planSession.getPreco()));
-			var payment = paymentService.create(user.getId(), plan.getId(), String.valueOf(pixResponse.getPaymentId()), pixResponse.getQrCode(),
-					pixResponse.getQrCodeBase64());
+			var payment = paymentService.create(user.getId(), plan.getId(), String.valueOf(pixResponse.getPaymentId()), pixResponse.getQrCode(), pixResponse.getQrCodeBase64());
 			orderService.create(user.getId(), plan.getId(), payment.getId(), licensePlate, gatewayReport, planSession.getNome(), planSession.getCode());
 
-			return ResponseEntity.ok(Map.of("qrCodeBase64", pixResponse.getQrCodeBase64(), "qrCode", pixResponse.getQrCode(), "externalId",
-					String.valueOf(pixResponse.getPaymentId())));
+			return ResponseEntity.ok(Map.of("qrCodeBase64", pixResponse.getQrCodeBase64(), "qrCode", pixResponse.getQrCode(), "externalId", String.valueOf(pixResponse.getPaymentId())));
 
 		} catch (Exception e) {
 			log.error("Erro ao gerar PIX: ", e);
@@ -96,7 +94,7 @@ public class PagamentoController {
 
 	    try {
 	        if (!"payment".equals(payload.getType())) {
-	            return ResponseEntity.ok().build(); // ignora outros tipos
+	            return ResponseEntity.ok().build();
 	        }
 
 	        String externalId = payload.getData().getId();

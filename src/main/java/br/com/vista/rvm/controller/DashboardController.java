@@ -28,10 +28,12 @@ import br.com.vista.rvm.entity.User;
 import br.com.vista.rvm.service.OrderService;
 import br.com.vista.rvm.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardController {
 	private final OrderService orderService;
 	private final UserService userService;

@@ -22,14 +22,17 @@ import br.com.vista.rvm.dto.enums.Plans;
 import br.com.vista.rvm.service.PaymentService;
 import br.com.vista.rvm.service.UserService;
 import br.com.vista.rvm.supplier.checktudo.dto.CheckTudoAgregadosResponseDTO;
+import br.com.vista.rvm.supplier.checktudo.dto.CheckTudoWebhookDTO;
 import br.com.vista.rvm.supplier.checktudo.service.CheckTudoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class HomeController {
 
 	//private final ConferiService conferiService;
@@ -71,7 +74,7 @@ public class HomeController {
 		String placa = (String) session.getAttribute("placa");
 
 		try {
-			var veiculo = checktudoService.agregados(placa.replace("-", ""));
+			var veiculo = checktudoService.requestAgregados(placa.replace("-", ""));
 
 			session.setAttribute("veiculo", veiculo);
 			model.addAttribute("veiculo", veiculo.getBody().getData());
@@ -156,6 +159,45 @@ public class HomeController {
 		} catch (DisabledException e) {
 			return ResponseEntity.status(403).body(Map.of("message", "Usuário inativo."));
 		}
+	}
+	
+	@PostMapping("/order/notification")
+	public ResponseEntity<Void> receberNotificacao(@RequestBody CheckTudoWebhookDTO payload) {
+	    log.info("Webhook CheckTudo recebido: data={}", payload.getPayload().getData());
+
+	    try {
+//	        if (!"payment".equals(payload.getType())) {
+//	            return ResponseEntity.ok().build();
+//	        }
+//
+//	        String externalId = payload.getData().getId();
+//
+//	        var statusResponse = mercadoPagoService.consultarStatusPagamento(Long.parseLong(externalId));
+//	        var paymentStatus = MercadoPagoStatus.fromValue(statusResponse.getStatus()).toPaymentStatus();
+//	        var payment = paymentService.updateStatus(externalId, paymentStatus);
+//
+//	        // ✅ só gera laudo se APPROVED e ainda não foi processado
+//	        if (paymentStatus == PaymentStatus.PAID) {
+//	            var order = orderService.findByPaymentId(payment.getId());
+//
+//	            if (order.isEmpty()) {
+//	                log.warn("Nenhuma order encontrada para paymentId={}", payment.getId());
+//	                return ResponseEntity.ok().build();
+//	            }
+//
+//	            if (order.get().getStatus() == OrderStatus.FINISHED) {
+//	                log.info("Order id={} já foi processada, ignorando webhook.", order.get().getId());
+//	                return ResponseEntity.ok().build(); // ✅ idempotência
+//	            }
+//
+//	            orderService.requestReport(order.get().getId());
+//	        }
+
+	    } catch (Exception e) {
+	        log.error("Erro ao processar webhook: {}", e.getMessage(), e);
+	    }
+
+	    return ResponseEntity.ok().build();
 	}
 
 }

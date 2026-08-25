@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import br.com.vista.rvm.entity.Order;
+import br.com.vista.rvm.entity.enums.OrderStatus;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -22,4 +23,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Page<Order> findByUserId(Long userId, Pageable pageable);
 
 	Page<Order> findByUserIdAndLicensePlateContainingIgnoreCase(Long userId, String licensePlate, Pageable pageable);
+	
+	List<Order> findByUserIdAndLicensePlateAndStatus(Long userId, String licensePlate, OrderStatus status);
 }

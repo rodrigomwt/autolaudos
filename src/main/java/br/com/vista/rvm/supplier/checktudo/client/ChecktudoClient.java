@@ -23,7 +23,7 @@ public interface ChecktudoClient {
 	@PostMapping(value = "/api/vehicle/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	CheckTudoAgregadosResponseDTO requestAgregados(@RequestHeader("authorization") String token, @PathVariable String userId, @RequestBody CheckTudoRequestDTO request);
 	
-	@PostMapping(value = "/api/query/order", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	CheckTudoReportResponseDTO requestReport(@RequestHeader("authorization") String token, @RequestBody CheckTudoRequestDTO request);
+	@PostMapping(value = "/api/query/order/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	CheckTudoReportResponseDTO requestReport(@RequestHeader("authorization") String token, @PathVariable String userId, @RequestBody CheckTudoRequestDTO request);
 
 }

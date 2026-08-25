@@ -36,12 +36,12 @@ public class SecurityConfig {
 				.requestMatchers("/static/**", "/site/**", "/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
 				.requestMatchers("/", "/home", "/new-session", "/selected-plan", "/step1", "/step2", "/stepPayment", "/status-payment/**",
 						"/pagamento/gerar-pix", "/pagamento/notification", "/usuarios/registrar", "/usuarios/primeiro-acesso", "/primeiro-acesso/**",
-						"/auth/login", "/fragments/**")
+						"/auth/login", "/order/notification", "/fragments/**")
 				.permitAll().requestMatchers("/dashboard/**").authenticated().anyRequest().authenticated())
 				.formLogin(form -> form.loginPage("/home").loginProcessingUrl("/auth/login-form").defaultSuccessUrl("/dashboard/consultas", true)
 						.permitAll())
 				.logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/home").permitAll())
-				.csrf(csrf -> csrf.ignoringRequestMatchers("/usuarios/registrar", "/auth/login", "/pagamento/gerar-pix-dash",
+				.csrf(csrf -> csrf.ignoringRequestMatchers("/usuarios/registrar", "/auth/login", "/order/notification", "/pagamento/gerar-pix-dash",
 						"/pagamento/notification", "/site/**"));
 
 		return http.build();
