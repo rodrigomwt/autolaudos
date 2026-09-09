@@ -1,12 +1,9 @@
 package br.com.vista.rvm.controller;
 
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.vista.rvm.dto.OrderDTO;
@@ -37,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DashboardController {
 	private final OrderService orderService;
 	private final UserService userService;
-
+	
 	@GetMapping({ "/", "/consultas" })
 	@Transactional(readOnly = true)
 	public String consultas(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(required = false) String placa,
@@ -69,35 +65,25 @@ public class DashboardController {
 	
 	@GetMapping("/consultas/laudo/{id}")
 	public String abrirPaginaLaudo(@PathVariable Long id, Model model) {
-	    model.addAttribute("laudoId", id);
-	    model.addAttribute("activePage", "laudo");
+		String report = orderService.showReport(id);
+		
+		model.addAttribute("laudoJson", report);
+	    model.addAttribute("activePage", "consultas");
+	    //model.addAttribute("placa", reportJson.getPlaca());
 	    return "dashboard/laudo";
 	}
 	
-	@GetMapping("/consultas/laudo/{id}/dados")
-	@ResponseBody
-	public ResponseEntity<?> buscarDadosLaudo(@PathVariable Long id) {
-	    try {
-	        String laudo = orderService.gerarLaudoChecktudo(id);
-
-	        if (laudo == null || laudo.isBlank()) {
-	            return ResponseEntity.ok(Map.of(
-	                "pendente", true
-	            ));
-	        }
-
-	        return ResponseEntity.ok(Map.of(
-	            "pendente", false,
-	            "laudo", laudo
-	        ));
-
-	    } catch (Exception e) {
-	        return ResponseEntity.internalServerError().body(Map.of(
-	            "erro", true,
-	            "mensagem", "Não foi possível carregar o laudo."
-	        ));
-	    }
-	}
+//	@GetMapping("/consultas/laudo/{id}/dados")
+//	@ResponseBody
+//	public String buscarDadosLaudo(@PathVariable Long id, Model model) {
+//		String report = orderService.showReport(id);
+//		
+//		model.addAttribute("laudoJson", report);
+//	    model.addAttribute("activePage", "consultas");
+//	    //model.addAttribute("placa", reportJson.getPlaca());
+//	    
+//	    return "laudo";
+//	}
 	
 	@GetMapping("/profile")
     public String perfil(@AuthenticationPrincipal UserDetails userDetails, Model model) {

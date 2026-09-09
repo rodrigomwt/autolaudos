@@ -1,291 +1,1988 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{dashboard/layout_dash}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout_dash}">
 
 <head>
-<title>Laudo</title>
-<link rel="stylesheet" th:href="@{/dashboard/css/laudo.css}" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Laudo Veicular</title>
+
+  <!-- ── CSS específico do laudo ── -->
+  <th:block layout:fragment="css">
+    <style>
+/* ================================================================
+     LAUDO VEICULAR — Estilos
+     Prefixo: .laudo-  (sem conflito com Bootstrap / outras libs)
+  ================================================================ */
+
+  :root {
+    --lau-primary: #1b3a6b;
+    --lau-primary-light: #2d5ba3;
+    --lau-accent: #1e88e5;
+    --lau-success: #2e7d32;
+    --lau-success-bg: #e8f5e9;
+    --lau-warning: #e65100;
+    --lau-warning-bg: #fff3e0;
+    --lau-danger: #c62828;
+    --lau-danger-bg: #ffebee;
+    --lau-muted: #546e7a;
+    --lau-border: #cfd8dc;
+    --lau-bg: #eceff1;
+    --lau-card-bg: #ffffff;
+    --lau-header-bg: #1b3a6b;
+    --lau-header-text: #ffffff;
+    --lau-text: #212121;
+    --lau-text-secondary: #546e7a;
+    --lau-radius: 6px;
+    --lau-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+
+  #laudo-root {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--lau-text);
+    line-height: 1.5;
+    background: var(--lau-bg);
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* ── SEÇÕES ── */
+  .laudo-section {
+    background: var(--lau-card-bg);
+    border-radius: var(--lau-radius);
+    box-shadow: var(--lau-shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .laudo-section-header {
+    background: var(--lau-header-bg);
+    color: var(--lau-header-text);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .laudo-section-header .lau-toggle {
+    margin-left: auto;
+    font-size: 16px;
+    transition: transform .2s;
+  }
+
+  .laudo-section-header.collapsed .lau-toggle { transform: rotate(-90deg); }
+
+  .laudo-section-body {
+    padding: 14px 16px;
+  }
+
+  .laudo-section-body.hidden { display: none; }
+
+  /* ── CABEÇALHO DO LAUDO ── */
+  .laudo-header-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 18px;
+    background: #fff;
+    border-radius: var(--lau-radius);
+    box-shadow: var(--lau-shadow);
+    margin-bottom: 16px;
+  }
+
+  .laudo-logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 110px;
+  }
+
+  .laudo-logo-placeholder {
+    width: 100px;
+    height: 70px;
+    border: 2px dashed var(--lau-border);
+    border-radius: var(--lau-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f7fa;
+    overflow: hidden;
+  }
+
+  .laudo-logo-placeholder img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: none;
+  }
+
+  .laudo-logo-placeholder img.loaded { display: block; }
+
+  .laudo-logo-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--lau-primary);
+    text-align: center;
+    letter-spacing: 1px;
+    padding: 2px;
+  }
+
+  .laudo-tipo-badge {
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #fff;
+  }
+
+  .badge-essencial { background: #546e7a; }
+  .badge-completa  { background: #1565c0; }
+  .badge-premium   { background: #6a1b9a; }
+
+  .laudo-header-info {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .laudo-header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--lau-primary);
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .laudo-header-subtitle {
+    font-size: 13px;
+    color: var(--lau-text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .laudo-infogrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px 14px;
+  }
+
+  .laudo-infoitem {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .laudo-infoitem-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--lau-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .laudo-infoitem-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lau-text);
+  }
+
+  /* ── RISCO ── */
+  .laudo-risco-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .laudo-risco-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+  }
+
+  .laudo-risco-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .laudo-risco-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .risco-1,.risco-2,.risco-3 { background: var(--lau-success); }
+  .risco-4,.risco-5          { background: #f9a825; }
+  .risco-6,.risco-7          { background: var(--lau-warning); }
+  .risco-8,.risco-9,.risco-10{ background: var(--lau-danger); }
+
+  .risco-text-baixo   { color: var(--lau-success); }
+  .risco-text-medio   { color: #f9a825; }
+  .risco-text-alto    { color: var(--lau-warning); }
+  .risco-text-critico { color: var(--lau-danger); }
+
+  .laudo-risco-parecer {
+    flex: 1;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--lau-text-secondary);
+    line-height: 1.6;
+    border-left: 3px solid var(--lau-border);
+    padding-left: 12px;
+  }
+
+  /* Barra de segmentos de risco */
+  .laudo-risco-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+  .laudo-risco-seg {
+    flex: 1;
+    height: 14px;
+    border-radius: 3px;
+    opacity: 0.2;
+    transition: opacity .2s;
+  }
+  .laudo-risco-seg.active { opacity: 1; }
+  .seg-baixo   { background: var(--lau-success); }
+  .seg-medio   { background: #f9a825; }
+  .seg-alto    { background: var(--lau-warning); }
+  .seg-critico { background: var(--lau-danger); }
+
+  /* ── BADGES DE STATUS ── */
+  .lau-status {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .lau-ok      { background: var(--lau-success-bg); color: var(--lau-success); }
+  .lau-warn    { background: var(--lau-warning-bg); color: var(--lau-warning); }
+  .lau-danger  { background: var(--lau-danger-bg);  color: var(--lau-danger); }
+  .lau-neutral { background: #eceff1; color: #546e7a; }
+
+  /* ── TABELAS ── */
+  .laudo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .laudo-table th {
+    background: #f0f4f8;
+    color: var(--lau-primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 2px solid var(--lau-border);
+  }
+
+  .laudo-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #eceff1;
+    vertical-align: top;
+    color: var(--lau-text);
+  }
+
+  .laudo-table tbody tr:hover { background: #f5f7fa; }
+
+  .laudo-table .lau-td-label {
+    font-weight: 600;
+    color: var(--lau-text-secondary);
+    white-space: nowrap;
+    width: 200px;
+  }
+
+  /* ── KV GRID (chave/valor) ── */
+  .laudo-kv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px 20px;
+  }
+
+  .laudo-kv-item { display: flex; flex-direction: column; }
+
+  .laudo-kv-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--lau-text-secondary);
+    margin-bottom: 2px;
+  }
+
+  .laudo-kv-value {
+    font-size: 13px;
+    color: var(--lau-text);
+    font-weight: 500;
+  }
+
+  /* ── RESTRICÕES ── */
+  .laudo-restricoes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .laudo-restricao-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--lau-border);
+    background: #fafafa;
+  }
+
+  .laudo-restricao-item .laudo-kv-label { margin-bottom: 0; }
+
+  /* ── LEILÃO SCORE ── */
+  .laudo-score-bars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .laudo-score-item {
+    flex: 1;
+    min-width: 130px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--lau-border);
+  }
+
+  .laudo-score-item-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--lau-text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .laudo-score-bar-wrap {
+    background: #dde;
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  .laudo-score-bar-fill {
+    height: 8px;
+    border-radius: 6px;
+    background: var(--lau-accent);
+    transition: width .4s;
+  }
+
+  .laudo-score-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--lau-primary);
+  }
+
+  /* ── FIPE HISTÓRICO ── */
+  .laudo-fipe-valor {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--lau-primary);
+    margin-bottom: 4px;
+  }
+
+  .laudo-historico-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .laudo-historico-item {
+    background: #f0f4f8;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--lau-text-secondary);
+  }
+
+  /* ── PROPRIETÁRIOS ── */
+  .laudo-prop-timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .laudo-prop-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--lau-border);
+  }
+
+  .laudo-prop-item {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    border: 1px solid var(--lau-border);
+  }
+
+  .laudo-prop-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 14px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--lau-primary);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--lau-border);
+  }
+
+  .laudo-prop-nome {
+    font-weight: 700;
+    color: var(--lau-primary);
+    font-size: 14px;
+  }
+
+  .laudo-prop-meta {
+    font-size: 12px;
+    color: var(--lau-text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ── FICHA TÉCNICA ── */
+  .laudo-ficha-group {
+    margin-bottom: 16px;
+  }
+
+  .laudo-ficha-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--lau-primary);
+    border-bottom: 2px solid var(--lau-border);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    letter-spacing: .4px;
+  }
+
+  /* ── RADAR SECURITÁRIO ── */
+  .laudo-radar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .laudo-radar-card {
+    background: #f5f7fa;
+    border: 1px solid var(--lau-border);
+    border-radius: var(--lau-radius);
+    padding: 10px 12px;
+  }
+
+  .laudo-radar-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--lau-text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: .4px;
+  }
+
+  .laudo-radar-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+
+  .laudo-radar-key { color: var(--lau-text-secondary); }
+  .laudo-radar-val { font-weight: 600; color: var(--lau-text); }
+
+  /* ── CUSTO MÉDIO ── */
+  .laudo-custo-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .laudo-custo-card {
+    flex: 1;
+    min-width: 120px;
+    background: #f0f4f8;
+    border-radius: var(--lau-radius);
+    border: 1px solid var(--lau-border);
+    padding: 12px;
+    text-align: center;
+  }
+
+  .laudo-custo-card-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--lau-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .laudo-custo-card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--lau-text-secondary);
+    font-weight: 600;
+    letter-spacing: .4px;
+  }
+
+  /* ── REVISÃO ── */
+  .laudo-revisao-card {
+    border: 1px solid var(--lau-border);
+    border-radius: var(--lau-radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .laudo-revisao-card-header {
+    background: #e8eef6;
+    padding: 8px 12px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .laudo-revisao-km {
+    font-weight: 700;
+    color: var(--lau-primary);
+    font-size: 14px;
+  }
+
+  .laudo-revisao-meta {
+    font-size: 12px;
+    color: var(--lau-text-secondary);
+  }
+
+  .laudo-revisao-preco {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--lau-success);
+    font-size: 14px;
+  }
+
+  .laudo-revisao-body {
+    padding: 10px 12px;
+    display: none;
+  }
+
+  .laudo-revisao-body.open { display: block; }
+
+  /* ── CESTA BÁSICA ── */
+  .laudo-cesta-search {
+    width: 100%;
+    max-width: 300px;
+    padding: 6px 10px;
+    border: 1px solid var(--lau-border);
+    border-radius: var(--lau-radius);
+    font-size: 13px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    outline: none;
+    color: var(--lau-text);
+  }
+
+  .laudo-cesta-search:focus { border-color: var(--lau-accent); }
+
+  /* ── ACESSÓRIOS ── */
+  .laudo-acess-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 4px 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .laudo-acess-list li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 3px 0;
+    color: var(--lau-text);
+  }
+
+  .laudo-acess-list li::before {
+    content: '✓';
+    font-weight: 700;
+    color: var(--lau-success);
+    flex-shrink: 0;
+  }
+
+  .laudo-acess-group-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--lau-text-secondary);
+    letter-spacing: .5px;
+    margin: 10px 0 4px;
+    border-bottom: 1px solid var(--lau-border);
+    padding-bottom: 3px;
+  }
+
+  /* ── COMPARATIVO ── */
+  .laudo-comp-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .laudo-comp-card {
+    flex: 1;
+    min-width: 190px;
+    max-width: 280px;
+    border: 1px solid var(--lau-border);
+    border-radius: var(--lau-radius);
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .laudo-comp-card-header {
+    background: #e8eef6;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .laudo-comp-card-logo {
+    width: 32px;
+    height: 22px;
+    object-fit: contain;
+    border-radius: 2px;
+  }
+
+  .laudo-comp-card-posicao {
+    margin-left: auto;
+    background: var(--lau-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .laudo-comp-card-body {
+    padding: 8px 12px;
+  }
+
+  .laudo-comp-card-modelo {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--lau-primary);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .laudo-comp-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+
+  .laudo-comp-key { color: var(--lau-text-secondary); }
+  .laudo-comp-val { font-weight: 600; }
+
+  .laudo-comp-equip-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin: 1px 2px 1px 0;
+  }
+
+  .equip-series  { background: var(--lau-success-bg); color: var(--lau-success); }
+  .equip-missing { background: var(--lau-danger-bg);  color: var(--lau-danger); }
+  .equip-opt     { background: #fffde7; color: #f57f17; }
+
+  /* ── NOTICE ── */
+  .laudo-notice {
+    padding: 10px 14px;
+    border-radius: var(--lau-radius);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .laudo-notice-ok      { background: var(--lau-success-bg); color: var(--lau-success); border-left: 4px solid var(--lau-success); }
+  .laudo-notice-warn    { background: var(--lau-warning-bg); color: var(--lau-warning); border-left: 4px solid var(--lau-warning); }
+  .laudo-notice-danger  { background: var(--lau-danger-bg);  color: var(--lau-danger);  border-left: 4px solid var(--lau-danger); }
+  .laudo-notice-neutral { background: #eceff1; color: #455a64; border-left: 4px solid #90a4ae; }
+
+  /* ── GRAVAME ── */
+  .laudo-gravame-card {
+    border: 1px solid var(--lau-border);
+    border-radius: var(--lau-radius);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: #fafafa;
+  }
+
+  /* ── RODAPÉ DO LAUDO ── */
+  .laudo-footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--lau-text-secondary);
+    padding: 8px 0 4px;
+    border-top: 1px solid var(--lau-border);
+    margin-top: 10px;
+  }
+
+  /* ── VAZIO ── */
+  .laudo-empty {
+    text-align: center;
+    color: var(--lau-text-secondary);
+    padding: 40px;
+    font-size: 15px;
+  }
+
+  /* ── RESPONSIVO ── */
+  @media (max-width: 600px) {
+    #laudo-root { padding: 8px; }
+    .laudo-header-card { flex-direction: column; }
+    .laudo-comp-card { min-width: 100%; max-width: 100%; }
+    .laudo-infogrid { grid-template-columns: repeat(2, 1fr); }
+  }
+    </style>
+  </th:block>
 </head>
 
 <body>
-	<main layout:fragment="content">
-		<div id="laudoLoading" class="laudo-loading">
-			<div class="laudo-loading-box">
-				<div class="spinner"></div>
-				<h3>Gerando seu laudo...</h3>
-				<p>Estamos consultando o provedor. Isso pode levar alguns
-					instantes.</p>
-			</div>
-		</div>
 
-		<div id="laudoErro" style="display: none;">
-			<div class="dash-card">
-				<div class="dash-card-title">Erro ao carregar laudo</div>
-				<p id="laudoErroMsg">Não foi possível carregar o laudo.</p>
-			</div>
-		</div>
+  <!-- ── Conteúdo principal (injeta dentro do <main class="dash-content"> do layout) ── -->
+  <th:block layout:fragment="content">
 
-		<div id="laudoContent" style="display: none;">
+    <!--
+      Título / breadcrumb da página (opcional — remova se não quiser)
+    -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h2 style="margin:0;font-size:18px;color:#1b3a6b;font-weight:700">
+          <i class="fas fa-file-alt" style="margin-right:6px"></i>Laudo Veicular
+        </h2>
+        <p style="margin:4px 0 0;font-size:12px;color:#546e7a"
+           th:text="${placa != null ? 'Placa: ' + placa : ''}" ></p>
+      </div>
+      <a th:href="@{/dashboard/consultas}"
+         style="font-size:12px;color:#1b3a6b;text-decoration:none">
+        <i class="fas fa-arrow-left" style="margin-right:4px"></i>Voltar às consultas
+      </a>
+    </div>
 
-			<!-- Botão de Impressão -->
-			<div class="laudo-print-header">
-				<button onclick="window.print()" class="btn-print" title="Imprimir Laudo">
-					<i class="fas fa-print"></i> Imprimir
-				</button>
-			</div>
+    <!-- Container do laudo (renderizado pelo JS) -->
+<div id="laudo-root">
+  <div class="laudo-empty">⏳ Carregando laudo...</div>
 
-			<!-- HERO CARD -->
-			<div class="laudo-hero">
-				<div class="laudo-hero-left">
-					<div class="laudo-placa-box">
-						<div class="placa-label">Placa</div>
-						<div class="placa-value" id="heroPlaca">—</div>
-					</div>
-					<div class="laudo-hero-info">
-						<h2 id="heroModelo">—</h2>
-						<div class="hero-meta">
-							<div class="hero-meta-item">
-								<i class="fas fa-calendar-alt"></i> Fab: <span id="heroAnoFab">—</span>
-							</div>
-							<div class="hero-meta-item">
-								<i class="fas fa-calendar-check"></i> Mod: <span id="heroAnoMod">—</span>
-							</div>
-							<div class="hero-meta-item">
-								<i class="fas fa-gas-pump"></i> <span id="heroCombustivel">—</span>
-							</div>
-							<div class="hero-meta-item">
-								<i class="fas fa-map-marker-alt"></i> <span id="heroUf">—</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="laudo-hero-right">
-					<div class="fipe-label">Valor FIPE Atual</div>
-					<div class="fipe-value" id="heroFipe">—</div>
-					<div class="fipe-sub" id="heroFipeSub">—</div>
-				</div>
-			</div>
+  </th:block>
 
-			<!-- RISCO + DADOS BÁSICOS -->
-			<div class="laudo-grid-2">
+  <!-- ── Scripts específicos do laudo ── -->
+  <th:block layout:fragment="scripts">
 
-				<!-- Análise de Risco -->
-				<div class="laudo-card">
-					<div class="laudo-card-title">
-						<i class="fas fa-shield-alt"></i> Análise de Risco
-					</div>
-					<div class="risco-card">
-						<div class="risco-score-circle baixo" id="riscoCircle">1</div>
-						<div class="risco-info">
-							<h3 id="riscoTitulo">Baixo Risco</h3>
-							<p id="riscoParecer">—</p>
-						</div>
-					</div>
-				</div>
+    <!--
+      1) Injeção do JSON pelo Thymeleaf.
+         No seu Controller faça:
+           model.addAttribute("laudoJson", objectMapper.writeValueAsString(laudoObj));
+    -->
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      /*
+       * Injeção segura: funciona tanto quando laudoJson é uma String Java
+       * (salvo como texto no MySQL) quanto quando é um objeto/Map Java.
+       *
+       * - String Java  → Thymeleaf gera uma string JS entre aspas → JSON.parse converte
+       * - Object Java  → Thymeleaf gera um objeto JS literal → typeof !== 'string', usa direto
+       * - null/ausente → cai no fallback {}
+       */
+      (function() {
+        var _raw = /*[[${laudoJson}]]*/ null;
+        if (_raw === null || _raw === undefined) {
+          window.laudoData = {};
+        } else if (typeof _raw === 'string') {
+          try { window.laudoData = JSON.parse(_raw); }
+          catch (e) { window.laudoData = {}; console.error('Erro ao parsear laudoJson:', e); }
+        } else {
+          window.laudoData = _raw;
+        }
+      })();
+      /*]]>*/
+    </script>
 
-				<!-- Dados Básicos -->
-				<div class="laudo-card">
-					<div class="laudo-card-title">
-						<i class="fas fa-car"></i> Dados Básicos do Veículo
-					</div>
-					<table class="info-table">
-						<tr>
-							<td>Marca</td>
-							<td id="dbMarca">—</td>
-						</tr>
-						<tr>
-							<td>Modelo</td>
-							<td id="dbModelo">—</td>
-						</tr>
-						<tr>
-							<td>Chassi</td>
-							<td id="dbChassi">—</td>
-						</tr>
-						<tr>
-							<td>RENAVAM</td>
-							<td id="dbRenavam">—</td>
-						</tr>
-						<tr>
-							<td>Cilindradas</td>
-							<td id="dbCilindradas">—</td>
-						</tr>
-						<tr>
-							<td>Código FIPE</td>
-							<td id="dbCodigoFipe">—</td>
-						</tr>
-					</table>
-				</div>
-			</div>
+    <!--
+      2) Toda a lógica de renderização do laudo.
+    -->
+    <script>
+// ================================================================
+// LAUDO VEICULAR — Renderização Dinâmica
+// Thymeleaf: declare  var laudoData = DADOS_JSON;  antes deste script
+// Exemplo (no template .html):
+//   <script th:inline="javascript">
+//     var laudoData = /*[[${laudoJson}]]*/ {};
+//   <\/script>
+// ================================================================
 
-			<!-- SITUAÇÃO DO VEÍCULO -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-clipboard-check"></i> Situação do Veículo
-				</div>
-				<div class="status-grid" id="statusGrid">
-					<!-- populado via JS -->
-				</div>
-			</div>
+// ────────────────────────────────────────────────
+// UTILITÁRIOS
+// ────────────────────────────────────────────────
 
-			<!-- DÉBITOS -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-file-invoice-dollar"></i> Débitos
-				</div>
-				<div id="debitosContainer">
-					<!-- populado via JS -->
-				</div>
-			</div>
+function fmt(val) {
+  if (val === null || val === undefined || val === '') return '—';
+  return String(val).trim() || '—';
+}
 
-			<!-- BASE ESTADUAL -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-landmark"></i> Base Estadual
-				</div>
-				<div class="laudo-grid-2" style="margin-bottom: 0;">
-					<table class="info-table">
-						<tr>
-							<td>Proprietário</td>
-							<td id="bePronome">—</td>
-						</tr>
-						<tr>
-							<td>Município</td>
-							<td id="beMunicipio">—</td>
-						</tr>
-						<tr>
-							<td>UF</td>
-							<td id="beUf">—</td>
-						</tr>
-						<tr>
-							<td>Categoria</td>
-							<td id="beCategoria">—</td>
-						</tr>
-						<tr>
-							<td>Espécie</td>
-							<td id="beEspecie">—</td>
-						</tr>
-						<tr>
-							<td>Situação</td>
-							<td id="beSituacao">—</td>
-						</tr>
-					</table>
-					<table class="info-table">
-						<tr>
-							<td>Restrição Financeira</td>
-							<td id="beRestFinanceira">—</td>
-						</tr>
-						<tr>
-							<td>Restrição Judicial</td>
-							<td id="beRestJudicial">—</td>
-						</tr>
-						<tr>
-							<td>Restrição Roubo/Furto</td>
-							<td id="beRestRoubo">—</td>
-						</tr>
-						<tr>
-							<td>Restrição Renajud</td>
-							<td id="beRestRenajud">—</td>
-						</tr>
-						<tr>
-							<td>Comunicação Venda</td>
-							<td id="beComVenda">—</td>
-						</tr>
-						<tr>
-							<td>Emissão CRV</td>
-							<td id="beEmissaoCrv">—</td>
-						</tr>
-					</table>
-				</div>
-			</div>
+function fmtNum(val, decimais) {
+  if (val === null || val === undefined || val === '') return '—';
+  var n = parseFloat(String(val).replace(',', '.'));
+  if (isNaN(n)) return String(val);
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: decimais || 0, maximumFractionDigits: decimais || 0 });
+}
 
-			<!-- LEILÃO -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-gavel"></i> Histórico de Leilão
-				</div>
-				<div class="leilao-scores" id="leilaoScores">
-					<!-- populado via JS -->
-				</div>
-				<div id="leilaoDescricao"
-					style="font-size: 13px; color: #5a6a7a; margin-bottom: 14px;"></div>
-				<div id="leilaoTabelaWrapper">
-					<!-- populado via JS -->
-				</div>
-			</div>
+function fmtBRL(val) {
+  if (val === null || val === undefined || val === '') return '—';
+  var n;
+  if (typeof val === 'number') {
+    n = val;
+  } else {
+    var s = String(val).trim();
+    if (s.indexOf(',') !== -1) {
+      // Formato brasileiro: "71.105,90" ou "71105,90"
+      // Remove pontos (separadores de milhar) e troca vírgula por ponto decimal
+      s = s.replace(/\./g, '').replace(',', '.');
+      n = parseFloat(s);
+    } else {
+      // Formato numérico/americano: "49931.00" ou "49931"
+      // Ponto já é separador decimal — parse direto
+      n = parseFloat(s);
+    }
+  }
+  if (isNaN(n)) return String(val);
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-			<!-- GRAVAMES -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-link"></i> Histórico de Gravames / Financiamentos
-				</div>
-				<div id="gravamesContainer">
-					<!-- populado via JS -->
-				</div>
-			</div>
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
-			<!-- GRÁFICO FIPE -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-chart-line"></i> Histórico de Preço FIPE
-				</div>
-				<div class="fipe-chart-wrapper">
-					<canvas id="fipeChart"></canvas>
-				</div>
-			</div>
+function isNadaConsta(text) {
+  if (!text) return true;
+  var t = text.toLowerCase().trim();
+  return t.includes('nada consta') || t.includes('nao existe') || t.includes('não existe')
+      || t.includes('sem ocorrencia') || t.includes('sem ocorrência') || t.includes('não consta')
+      || t === '—' || t === '-' || t === '0' || t === '0,00' || t === 'false';
+}
 
-			<!-- PROPRIETÁRIOS + KM -->
-			<div class="laudo-grid-2">
-				<div class="laudo-card">
-					<div class="laudo-card-title">
-						<i class="fas fa-users"></i> Histórico de Proprietários
-					</div>
-					<div id="proprietariosContainer">
-						<!-- populado via JS -->
-					</div>
-				</div>
-				<div class="laudo-card">
-					<div class="laudo-card-title">
-						<i class="fas fa-tachometer-alt"></i> Histórico de Quilometragem
-					</div>
-					<div id="kmContainer">
-						<!-- populado via JS -->
-					</div>
-				</div>
-			</div>
+function statusBadge(text, override) {
+  if (override) return '<span class="lau-status lau-' + override + '">' + escHtml(text) + '</span>';
+  if (!text || text === '—') return '<span class="lau-status lau-neutral">—</span>';
+  return isNadaConsta(text)
+    ? '<span class="lau-status lau-ok">' + escHtml(text) + '</span>'
+    : '<span class="lau-status lau-danger">' + escHtml(text) + '</span>';
+}
 
-			<!-- PLANO DE REVISÃO -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-tools"></i> Plano de Revisão
-				</div>
-				<div class="revisao-tabs" id="revisaoTabs">
-					<!-- populado via JS -->
-				</div>
-				<div id="revisaoContent">
-					<!-- populado via JS -->
-				</div>
-			</div>
+function statusBool(val, okText, badText) {
+  return val
+    ? '<span class="lau-status lau-danger">' + escHtml(badText || 'Sim') + '</span>'
+    : '<span class="lau-status lau-ok">' + escHtml(okText || 'Não') + '</span>';
+}
 
-			<!-- ACESSÓRIOS -->
-			<div class="laudo-card">
-				<div class="laudo-card-title">
-					<i class="fas fa-star"></i> Acessórios de Série
-				</div>
-				<div class="acessorios-grid" id="acessoriosGrid">
-					<!-- populado via JS -->
-				</div>
-			</div>
+function riskClass(idx) {
+  var n = parseInt(idx) || 0;
+  if (n <= 3) return 'risco-1';
+  if (n <= 5) return 'risco-4';
+  if (n <= 7) return 'risco-6';
+  return 'risco-8';
+}
 
-			<!-- ===== SCRIPT ===== -->
-			<!-- Injeta o ID do laudo para o JS externo conseguir ler -->
-			<script th:inline="javascript">
-				const LAUDO_ID = /*[[${laudoId}]]*/0;
-			</script>
-			<script th:src="@{/dashboard/js/laudo.js}"></script>
+function riskTextClass(idx) {
+  var n = parseInt(idx) || 0;
+  if (n <= 3) return 'risco-text-baixo';
+  if (n <= 5) return 'risco-text-medio';
+  if (n <= 7) return 'risco-text-alto';
+  return 'risco-text-critico';
+}
 
-		</div>
-	</main>
+function riskLabel(idx) {
+  var n = parseInt(idx) || 0;
+  if (n <= 3) return 'Baixo';
+  if (n <= 5) return 'Médio';
+  if (n <= 7) return 'Alto';
+  return 'Crítico';
+}
+
+function kvItem(label, value) {
+  return '<div class="laudo-kv-item"><span class="laudo-kv-label">' + escHtml(label) + '</span>'
+       + '<span class="laudo-kv-value">' + (value || '—') + '</span></div>';
+}
+
+function sectionHtml(icon, title, bodyHtml, collapsed) {
+  var colClass = collapsed ? ' collapsed' : '';
+  var hidClass = collapsed ? ' hidden' : '';
+  return '<div class="laudo-section">'
+       + '<div class="laudo-section-header' + colClass + '" onclick="laudoToggle(this)">'
+       + escHtml(icon) + ' ' + escHtml(title)
+       + '<span class="lau-toggle">▾</span></div>'
+       + '<div class="laudo-section-body' + hidClass + '">' + bodyHtml + '</div>'
+       + '</div>';
+}
+
+function detectType(data) {
+  if (data.fichaTecnica) return 'Premium';
+  if (data.recall)       return 'Completa';
+  return 'Essencial';
+}
+
+// ────────────────────────────────────────────────
+// LOGOS DE MONTADORAS (Wikimedia Commons — licença livre)
+// Para adicionar uma marca, inclua: 'nome em minúsculas': 'URL'
+// ────────────────────────────────────────────────
+
+var LOGO_MAP = {
+  'chevrolet':     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Chevrolet_icon.svg/120px-Chevrolet_icon.svg.png',
+  'ford':          'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/120px-Ford_logo_flat.svg.png',
+  'volkswagen':    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/120px-Volkswagen_logo_2019.svg.png',
+  'vw':            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/120px-Volkswagen_logo_2019.svg.png',
+  'fiat':          'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Fiat_Automobiles_logo.svg/120px-Fiat_Automobiles_logo.svg.png',
+  'toyota':        'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/120px-Toyota_carlogo.svg.png',
+  'honda':         'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Honda.svg/120px-Honda.svg.png',
+  'hyundai':       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Hyundai_Motor_Company_logo.svg/120px-Hyundai_Motor_Company_logo.svg.png',
+  'renault':       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Renault_2021_Text.svg/200px-Renault_2021_Text.svg.png',
+  'nissan':        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Nissan-logo.svg/120px-Nissan-logo.svg.png',
+  'jeep':          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Jeep_logo.svg/120px-Jeep_logo.svg.png',
+  'mitsubishi':    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Mitsubishi_logo.svg/120px-Mitsubishi_logo.svg.png',
+  'peugeot':       'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Peugeot_Logo_2021.svg/120px-Peugeot_Logo_2021.svg.png',
+  'citroen':       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Citro%C3%ABn_2022_logo.svg/200px-Citro%C3%ABn_2022_logo.svg.png',
+  'citroën':  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Citro%C3%ABn_2022_logo.svg/200px-Citro%C3%ABn_2022_logo.svg.png',
+  'kia':           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Kia-logo.svg/200px-Kia-logo.svg.png',
+  'bmw':           'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/120px-BMW.svg.png',
+  'mercedes-benz': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/120px-Mercedes-Logo.svg.png',
+  'mercedes':      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/120px-Mercedes-Logo.svg.png',
+  'audi':          'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/200px-Audi-Logo_2016.svg.png',
+  'volvo':         'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Volvo_wordmark.svg/200px-Volvo_wordmark.svg.png',
+  'subaru':        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Subaru_logo.svg/200px-Subaru_logo.svg.png',
+  'land rover':    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Land_Rover_logo.svg/200px-Land_Rover_logo.svg.png',
+  'dodge':         'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Dodge_logo.svg/200px-Dodge_logo.svg.png',
+  'ram':           'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Ram_Trucks_logo.svg/200px-Ram_Trucks_logo.svg.png',
+  'suzuki':        'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Suzuki_logo_2.svg/200px-Suzuki_logo_2.svg.png',
+  'byd':           'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/BYD_Auto_logo.svg/200px-BYD_Auto_logo.svg.png',
+  'chery':         'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Chery_logo.svg/200px-Chery_logo.svg.png',
+  'caoa chery':    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Chery_logo.svg/200px-Chery_logo.svg.png',
+  'caoa':          'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Chery_logo.svg/200px-Chery_logo.svg.png',
+  'gwm':           'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/GWM_logo.svg/200px-GWM_logo.svg.png',
+  'great wall':    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/GWM_logo.svg/200px-GWM_logo.svg.png',
+  'jac':           'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/JAC_Motors_logo.svg/200px-JAC_Motors_logo.svg.png',
+  'mini':          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Mini_logo.svg/120px-Mini_logo.svg.png',
+  'porsche':       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Porsche_logo.svg/120px-Porsche_logo.svg.png',
+  'lexus':         'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Lexus_division_emblem.svg/120px-Lexus_division_emblem.svg.png',
+  'chrysler':      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Chrysler_logo.svg/200px-Chrysler_logo.svg.png'
+};
+
+function setLogo(marca) {
+  var img = document.getElementById('laudo-logo-img');
+  var fallback = document.getElementById('laudo-logo-fallback');
+  if (!img || !marca) return;
+
+  var key = String(marca).toLowerCase().trim();
+  var url = LOGO_MAP[key];
+
+  // Tentativa de correspondência parcial quando não há chave exata
+  // (ex: "FORD/GM" encontra "ford"; "CAOA CHERY TIGGO" encontra "caoa chery")
+  if (!url) {
+    var keys = Object.keys(LOGO_MAP);
+    for (var i = 0; i < keys.length; i++) {
+      if (key.indexOf(keys[i]) !== -1 || keys[i].indexOf(key) !== -1) {
+        url = LOGO_MAP[keys[i]];
+        break;
+      }
+    }
+  }
+
+  if (!url) return; // marca não mapeada → mantém placeholder de texto
+
+  img.onload = function() {
+    img.classList.add('loaded');
+    if (fallback) fallback.style.display = 'none';
+  };
+  img.onerror = function() {
+    img.style.display = 'none';
+    if (fallback) fallback.style.display = '';
+  };
+  img.src = url;
+}
+
+function laudoToggle(header) {
+  header.classList.toggle('collapsed');
+  var body = header.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 1: CABEÇALHO
+// ────────────────────────────────────────────────
+
+function renderHeader(data, type) {
+  var dv = data.dadosBasicosDoVeiculo || {};
+  var be = data.baseEstadual || {};
+  var badgeClass = type === 'Premium' ? 'badge-premium' : (type === 'Completa' ? 'badge-completa' : 'badge-essencial');
+  var marca = dv.marca || data.marcaModelo || '';
+  var descricao = dv.descricao || data.marcaModelo || '';
+  var placa = fmt(dv.placa || data.placa);
+  var chassi = fmt(dv.chassi || data.chassi);
+  var renavam = fmt(data.renavam);
+  var anoFab = fmt(dv.anoFabricacao || data.anoFabricacao);
+  var anoMod = fmt(dv.anoModelo || data.anoModelo);
+  var cor = fmt(be.cor || data.corVeiculo);
+  var combustivel = fmt(dv.combustivel || data.combustivel);
+  var numMotor = fmt(be.motor || data.numMotor);
+  var municipio = fmt(be.municipio || data.municipio);
+  var uf = fmt(be.uf || data.uf);
+  var situacao = fmt(be.situacaoVeiculo || data.situacaoVeiculo);
+  var dtAtualizacao = fmt(data.dtUltimaAtualizacao);
+
+  // Logo placeholder
+  var logoHtml = '<div class="laudo-logo-placeholder" id="laudo-logo-box">'
+               + '<img id="laudo-logo-img" src="" alt="Logo ' + escHtml(marca) + '" />'
+               + '<span class="laudo-logo-text" id="laudo-logo-fallback">' + escHtml(marca.toUpperCase()) + '</span>'
+               + '</div>';
+
+  var html = '<div class="laudo-header-card">'
+           + '<div class="laudo-logo-area">'
+           + logoHtml
+           + '<span class="laudo-tipo-badge ' + badgeClass + '">' + type + '</span>'
+           + '</div>'
+           + '<div class="laudo-header-info">'
+           + '<div class="laudo-header-title">' + escHtml(descricao || marca) + '</div>'
+           + '<div class="laudo-header-subtitle">Laudo Veicular — ' + type
+           + (dtAtualizacao !== '—' ? ' &nbsp;|&nbsp; Atualizado em ' + dtAtualizacao : '') + '</div>'
+           + '<div class="laudo-infogrid">'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Placa</span><span class="laudo-infoitem-value">' + placa + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Chassi</span><span class="laudo-infoitem-value" style="font-size:11px;word-break:break-all">' + chassi + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">RENAVAM</span><span class="laudo-infoitem-value">' + renavam + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Ano Fab./Mod.</span><span class="laudo-infoitem-value">' + anoFab + '/' + anoMod + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Cor</span><span class="laudo-infoitem-value">' + cor + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Combustível</span><span class="laudo-infoitem-value">' + combustivel + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Nº Motor</span><span class="laudo-infoitem-value" style="font-size:11px">' + numMotor + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Município/UF</span><span class="laudo-infoitem-value">' + municipio + '/' + uf + '</span></div>'
+           + '<div class="laudo-infoitem"><span class="laudo-infoitem-label">Situação</span><span class="laudo-infoitem-value">' + situacao + '</span></div>'
+           + '</div>'
+           + '</div>'
+           + '</div>';
+  return html;
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 2: ANÁLISE DE RISCO
+// ────────────────────────────────────────────────
+
+function renderAnaliseRisco(ar) {
+  if (!ar) return '';
+  var idx = parseFloat(ar.indiceRisco) || 0;
+  var parecer = ar.parecer || '';
+  var label = riskLabel(idx);
+  var body = '<div class="laudo-risco-wrapper">';
+
+  // Prioridade: imagem gerada pela API (imageLink), senão gauge calculado
+  if (ar.imageLink) {
+    body += '<div style="text-align:center;margin-bottom:12px">'
+          + '<img src="' + escHtml(ar.imageLink) + '" alt="Indicador de Risco"'
+          + ' style="max-width:100%;max-height:180px;border-radius:8px;object-fit:contain">'
+          + '</div>';
+  } else {
+    // Gauge calculado a partir de indiceRisco (escala 1–10)
+    body += '<div class="laudo-risco-gauge">'
+          + '<div class="laudo-risco-circle ' + riskClass(idx) + '">' + idx + '</div>'
+          + '<div class="laudo-risco-label ' + riskTextClass(idx) + '">' + label + '</div>'
+          + '</div>';
+    // Barra visual de 10 segmentos
+    var barHtml = '<div class="laudo-risco-bar">';
+    for (var i = 1; i <= 10; i++) {
+      var seg = '';
+      if (i <= 3)       seg = 'seg-baixo';
+      else if (i <= 5)  seg = 'seg-medio';
+      else if (i <= 7)  seg = 'seg-alto';
+      else              seg = 'seg-critico';
+      var active = (i <= Math.round(idx)) ? ' active' : '';
+      barHtml += '<div class="laudo-risco-seg ' + seg + active + '" title="' + i + '"></div>';
+    }
+    barHtml += '</div>';
+    body += barHtml;
+  }
+
+  body += '<div class="laudo-risco-parecer">' + escHtml(parecer) + '</div>'
+        + '</div>';
+  return sectionHtml('🛡️', 'Análise de Risco', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 3: DADOS DO VEÍCULO
+// ────────────────────────────────────────────────
+
+function renderDadosVeiculo(data) {
+  var dv = data.dadosBasicosDoVeiculo || {};
+  var be = data.baseEstadual || {};
+  var ig = (dv.informacoesGerais || [])[0] || {};
+
+  var items = [
+    ['Marca/Modelo',    escHtml(dv.descricao || data.marcaModelo)],
+    ['Versão',          escHtml(ig.versao)],
+    ['Código FIPE',     escHtml(dv.codigoFipe)],
+    ['Categoria',       escHtml(be.categoria || data.categoria)],
+    ['Espécie',         escHtml(be.especie || data.especieVeiculo)],
+    ['Tipo de Veículo', escHtml(be.tipo || data.tipoVeiculo)],
+    ['Potência (cv)',   fmt(data.potencia)],
+    ['Cilindradas (cc)',fmt(data.cilindradas)],
+    ['Combustível',     escHtml(dv.combustivel || data.combustivel)],
+    ['Nº Chassi',       escHtml(dv.chassi || data.chassi)],
+    ['Tipo Marcação Chassi', escHtml(be.tipoMarcacaoChassi)],
+    ['Nº Motor',        escHtml(be.motor || data.numMotor)],
+    ['Emissão CRV',     escHtml(be.dataEmissaoCrv)],
+    ['Exercício Lic.',  escHtml(be.exercicioLicenciamento)],
+    ['Proprietário Atual', escHtml(be.pronome)],
+    ['Proprietário Anterior', escHtml(be.pronomeAnterior)],
+    ['Comunicação de Venda', escHtml(be.comunicacaoVenda)],
+    ['Município/UF',    escHtml((be.municipio || data.municipio) + '/' + (be.uf || data.uf))],
+  ];
+
+  var body = '<div class="laudo-kv-grid">' + items.map(function(i) {
+    return kvItem(i[0], i[1]);
+  }).join('') + '</div>';
+
+  return sectionHtml('🚗', 'Dados do Veículo', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 4: SITUAÇÃO — ROUBO/FURTO + INDÍCIO SINISTRO
+// ────────────────────────────────────────────────
+
+function renderSituacaoVeiculo(data) {
+  var rf = data.rouboFurto || {};
+  var is_ = data.indicioSinistro || {};
+  var bn = data.baseNacional || {};
+
+  var body = '';
+
+  // Roubo/Furto
+  body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:0 0 8px">🔍 Roubo / Furto</h4>';
+  var rfOk = !rf.constaOcorrencia;
+  body += '<div class="laudo-notice ' + (rfOk ? 'laudo-notice-ok' : 'laudo-notice-danger') + '" style="margin-bottom:8px">'
+        + '<strong>Ocorrência ativa:</strong> ' + statusBool(rf.constaOcorrenciaAtiva, 'Não consta', 'Consta ocorrência ativa')
+        + ' &nbsp; <strong>Histórico:</strong> ' + statusBool(rf.constaOcorrencia, 'Nenhum', 'Consta ocorrência')
+        + '</div>';
+
+  if (rf.historico && rf.historico.length) {
+    body += '<div class="laudo-notice laudo-notice-warn" style="margin-bottom:8px"><strong>Histórico de Ocorrências:</strong><ul style="margin:4px 0 0 16px;padding:0">'
+          + rf.historico.map(function(h) {
+              return '<li>' + escHtml(JSON.stringify(h)) + '</li>';
+            }).join('') + '</ul></div>';
+  }
+
+  // Indício de Sinistro
+  body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:12px 0 8px">💥 Indício de Sinistro</h4>';
+  var isSinistro = is_.classificacao;
+  var isOkSin = isNadaConsta(isSinistro) || String(isSinistro).toLowerCase().includes('sem indicio') || String(isSinistro).toLowerCase().includes('sem indício');
+  body += '<div class="laudo-notice ' + (isOkSin ? 'laudo-notice-ok' : 'laudo-notice-danger') + '">'
+        + '<strong>Classificação:</strong> ' + escHtml(fmt(isSinistro))
+        + (is_.descricao ? '<br><small style="opacity:.85">' + escHtml(is_.descricao) + '</small>' : '')
+        + '</div>';
+
+  // Base Nacional
+  body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:12px 0 8px">🏛️ Base Nacional</h4>';
+  body += '<div class="laudo-kv-grid">'
+        + kvItem('Ocorrência Nacional', escHtml(fmt(bn.ocorrencia)))
+        + kvItem('Restrição Financiadora', escHtml(fmt(bn.restricaoFinanciadora)))
+        + kvItem('Situação (BN)', escHtml(fmt(bn.situacaoVeiculo)))
+        + kvItem('Comunicação de Vendas', escHtml(fmt(bn.indicadorComunicacaoVendas)))
+        + kvItem('Restrição RENAJUD', escHtml(fmt(bn.indicadorRestricaoRenajud)))
+        + '</div>';
+
+  return sectionHtml('⚠️', 'Situação do Veículo', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 5: DÉBITOS
+// ────────────────────────────────────────────────
+
+function renderDebitos(be) {
+  if (!be) return '';
+
+  function debitoRow(label, valor, existeField) {
+    var ok = isNadaConsta(existeField || valor);
+    var cls = ok ? 'lau-ok' : 'lau-danger';
+    return '<tr><td class="lau-td-label">' + escHtml(label) + '</td>'
+         + '<td>' + fmtBRL(valor) + '</td>'
+         + '<td>' + '<span class="lau-status ' + cls + '">' + escHtml(fmt(existeField || (ok ? 'Nada consta' : 'Consta débito'))) + '</span>' + '</td>'
+         + '</tr>';
+  }
+
+  var body = '<table class="laudo-table"><thead><tr><th>Débito</th><th>Valor</th><th>Status</th></tr></thead><tbody>'
+           + debitoRow('IPVA',           be.debitoIpva,          be.existeDebitoIpva)
+           + debitoRow('Licenciamento',  be.debitoLicenciamento, be.existeDebitoLicenciamento)
+           + debitoRow('DPVAT',          be.debitoDpvat,         be.existeDebitoDpvat)
+           + debitoRow('Multas',         be.debitoMultas,        be.existeDebitoMulta)
+           + debitoRow('Municipais',     be.debitoMunicipais,    null)
+           + (be.debitoRenainf    ? debitoRow('RENAINF',         be.debitoRenainf,         null) : '')
+           + (be.debitoCetesb     ? debitoRow('CETESB',          be.debitoCetesb,          null) : '')
+           + (be.debitoDer        ? debitoRow('DER',             be.debitoDer,             null) : '')
+           + (be.debitoDersa      ? debitoRow('DERSA',           be.debitoDersa,           null) : '')
+           + (be.debitoDetran     ? debitoRow('DETRAN',          be.debitoDetran,          null) : '')
+           + (be.debitoPoliciaRodoviariaFederal ? debitoRow('Polícia Rodoviária Federal', be.debitoPoliciaRodoviariaFederal, null) : '')
+           + '</tbody></table>';
+
+  return sectionHtml('💳', 'Débitos', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 6: RESTRIÇÕES
+// ────────────────────────────────────────────────
+
+function renderRestricoes(data) {
+  var be = data.baseEstadual || {};
+
+  var restricoes = [
+    { label: 'Financeira',        val: be.restricaoFinanceira },
+    { label: 'Judicial',          val: be.restricaoJudicial },
+    { label: 'RENAJUD',           val: be.restricaoRenajud },
+    { label: 'Roubo/Furto',       val: be.restricaoRouboFurto },
+    { label: 'Administrativa',    val: be.restricaoAdminisrativa },
+    { label: 'Guincho',           val: be.restricaoGuincho },
+    { label: 'Tributária',        val: be.restricaoTributaria },
+    { label: 'Ambiental',         val: be.restricaoAmbiental },
+    { label: 'Arrendatário',      val: be.restricaoArrendatario },
+  ].filter(function(r) { return r.val !== null && r.val !== undefined; });
+
+  var outrasRows = '';
+  ['outrasRestricoes1','outrasRestricoes2','outrasRestricoes3','outrasRestricoes4'].forEach(function(k, i) {
+    if (be[k] && be[k] !== 'NADA CONSTA') {
+      outrasRows += '<tr><td class="lau-td-label">Outras Restrições ' + (i+1) + '</td>'
+                  + '<td>' + statusBadge(be[k]) + '</td></tr>';
+    }
+  });
+
+  var body = '<div class="laudo-restricoes-grid">'
+           + restricoes.map(function(r) {
+               var ok = isNadaConsta(r.val);
+               return '<div class="laudo-restricao-item">'
+                    + '<span class="laudo-kv-label">' + escHtml(r.label) + '</span>'
+                    + statusBadge(fmt(r.val))
+                    + '</div>';
+             }).join('')
+           + '</div>';
+
+  if (outrasRows) {
+    body += '<table class="laudo-table" style="margin-top:12px"><tbody>' + outrasRows + '</tbody></table>';
+  }
+
+  return sectionHtml('🔒', 'Restrições', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 7: LEILÃO
+// ────────────────────────────────────────────────
+
+function renderLeilao(leilao) {
+  if (!leilao) return '';
+  var score = leilao.score || {};
+  var registros = leilao.registros || [];
+  var hasLeilao = registros.length > 0;
+
+  var body = '';
+
+  // Descrição / alerta
+  if (leilao.descricao) {
+    var descOk = leilao.descricao.toLowerCase().includes('não consta') || leilao.descricao.toLowerCase().includes('nao consta');
+    body += '<div class="laudo-notice ' + (descOk ? 'laudo-notice-ok' : 'laudo-notice-warn') + '" style="margin-bottom:12px">'
+          + escHtml(leilao.descricao) + '</div>';
+  }
+
+  // Score bars
+  if (score && Object.keys(score).length) {
+    body += '<div class="laudo-score-bars">';
+    if (score.aceitacao !== undefined) {
+      body += scoreBar('Aceitação (%)', score.aceitacao);
+    }
+    if (score.exigenciaVistoriaEspecial !== undefined) {
+      body += scoreBar('Vistoria Especial (%)', score.exigenciaVistoriaEspecial);
+    }
+    if (score.percentualSobreRef !== undefined) {
+      body += scoreBar('% Sobre Referência', score.percentualSobreRef);
+    }
+    body += '</div>';
+  }
+
+  // Registros
+  if (hasLeilao) {
+    body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:12px 0 8px">Ocorrências em Leilão</h4>';
+    body += '<table class="laudo-table"><thead><tr><th>Comitente</th><th>Data</th><th>Marca/Modelo</th><th>Placa</th><th>Cor</th><th>Cond. Geral</th></tr></thead><tbody>';
+    registros.forEach(function(r) {
+      body += '<tr>'
+            + '<td>' + escHtml(fmt(r.comitente)) + '</td>'
+            + '<td>' + escHtml(fmt(r.dataLeilao)) + '</td>'
+            + '<td>' + escHtml(fmt(r.marca || r.modelo)) + '</td>'
+            + '<td>' + escHtml(fmt(r.placa)) + '</td>'
+            + '<td>' + escHtml(fmt(r.cor)) + '</td>'
+            + '<td>' + escHtml(fmt(r.condicaoGeral)) + '</td>'
+            + '</tr>';
+      if (r.observacao) {
+        body += '<tr><td colspan="6" style="font-size:11px;color:var(--lau-text-secondary);font-style:italic">Obs: ' + escHtml(r.observacao) + '</td></tr>';
+      }
+    });
+    body += '</tbody></table>';
+  }
+
+  return sectionHtml('🔨', 'Leilão', body, !hasLeilao);
+}
+
+function scoreBar(label, val) {
+  var pct = Math.min(100, Math.max(0, parseFloat(val) || 0));
+  return '<div class="laudo-score-item">'
+       + '<div class="laudo-score-item-label">' + escHtml(label) + '</div>'
+       + '<div class="laudo-score-bar-wrap"><div class="laudo-score-bar-fill" style="width:' + pct + '%"></div></div>'
+       + '<div class="laudo-score-value">' + fmt(val) + '%</div>'
+       + '</div>';
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 8: RECALL [Completa / Premium]
+// ────────────────────────────────────────────────
+
+function renderRecall(recall) {
+  if (!recall) return '';
+  var detalhes = recall.detalhes || [];
+  var pendentes = recall.recallsPendente || [];
+
+  var body = '';
+
+  if (!detalhes.length && !pendentes.length) {
+    body = '<div class="laudo-notice laudo-notice-ok">Nenhum recall encontrado para este veículo.</div>';
+  } else {
+    if (pendentes.length) {
+      body += '<div class="laudo-notice laudo-notice-warn" style="margin-bottom:8px"><strong>Recalls Pendentes: ' + pendentes.length + '</strong></div>';
+      body += '<table class="laudo-table"><thead><tr><th>Recall Pendente</th></tr></thead><tbody>'
+            + pendentes.map(function(r) { return '<tr><td>' + escHtml(JSON.stringify(r)) + '</td></tr>'; }).join('')
+            + '</tbody></table>';
+    }
+    if (detalhes.length) {
+      body += '<table class="laudo-table" style="margin-top:10px"><thead><tr><th>Detalhe do Recall</th></tr></thead><tbody>'
+            + detalhes.map(function(r) { return '<tr><td>' + escHtml(JSON.stringify(r)) + '</td></tr>'; }).join('')
+            + '</tbody></table>';
+    }
+  }
+
+  return sectionHtml('🔔', 'Recall', body, pendentes.length === 0);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 9: GRAVAME [Completa / Premium]
+// ────────────────────────────────────────────────
+
+function renderGravame(gravame) {
+  if (!gravame || !gravame.length) {
+    return sectionHtml('📋', 'Gravame', '<div class="laudo-notice laudo-notice-ok">Nenhum gravame encontrado.</div>', true);
+  }
+
+  var body = gravame.map(function(g) {
+    return '<div class="laudo-gravame-card">'
+         + '<div class="laudo-kv-grid">'
+         + kvItem('Agente', escHtml(fmt(g.agente)))
+         + kvItem('Situação', escHtml(fmt(g.situacao || g.gravame)))
+         + kvItem('Nº Contrato', escHtml(fmt(g.numero || g.contrato)))
+         + kvItem('Documento Financiado', escHtml(fmt(g.documentoFinanciado)))
+         + kvItem('Vigência Contrato', escHtml(fmt(g.dataVigenciaContrato)))
+         + kvItem('Placa', escHtml(fmt(g.placa)))
+         + kvItem('UF Placa', escHtml(fmt(g.ufPlaca || g.uf)))
+         + kvItem('RENAVAM', escHtml(fmt(g.renavam)))
+         + '</div>'
+         + '</div>';
+  }).join('');
+
+  return sectionHtml('📋', 'Gravame', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 10: REGISTRO EM LOCADORA [Completa / Premium]
+// ────────────────────────────────────────────────
+
+function renderLocadora(loc) {
+  if (!loc) return '';
+  var registrado = loc.registroEmLocadora;
+  var body = '<div class="laudo-notice ' + (registrado ? 'laudo-notice-warn' : 'laudo-notice-ok') + '">'
+           + (registrado ? '⚠️ Este veículo possui <strong>registro de uso em locadora</strong>.'
+                         : '✅ Veículo <strong>não possui</strong> registro em locadora.')
+           + '</div>';
+  return sectionHtml('🚐', 'Registro em Locadora', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 11: HISTÓRICO DE PROPRIETÁRIOS
+// ────────────────────────────────────────────────
+
+function renderHistoricoProprietarios(hist) {
+  if (!hist || !hist.length) {
+    return sectionHtml('👤', 'Histórico de Proprietários',
+      '<div class="laudo-notice laudo-notice-neutral">Nenhum histórico de proprietários disponível.</div>', true);
+  }
+
+  var body = '<p style="font-size:12px;color:var(--lau-text-secondary);margin:0 0 10px">Total de proprietários identificados: <strong>' + hist.length + '</strong></p>';
+  body += '<div class="laudo-prop-timeline">';
+
+  hist.forEach(function(p, i) {
+    var cpfMask = p.cpfCnpj ? p.cpfCnpj.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.***.***/$4-$5') : '—';
+    body += '<div class="laudo-prop-item">'
+          + '<div class="laudo-prop-nome">' + escHtml(fmt(p.proprietario)) + '</div>'
+          + '<div class="laudo-prop-meta">'
+          + 'Placa: <strong>' + escHtml(fmt(p.placa)) + '</strong>'
+          + ' &nbsp;|&nbsp; UF: <strong>' + escHtml(fmt(p.uf)) + '</strong>'
+          + (p.municipio ? ' &nbsp;|&nbsp; ' + escHtml(p.municipio) : '')
+          + ' &nbsp;|&nbsp; Emplacamento: <strong>' + escHtml(fmt(p.dataEmplacamento)) + '</strong>'
+          + ' &nbsp;|&nbsp; Exercício: <strong>' + escHtml(fmt(p.anoExercicio)) + '</strong>'
+          + '</div>'
+          + '</div>';
+  });
+
+  body += '</div>';
+  return sectionHtml('👤', 'Histórico de Proprietários', body, hist.length <= 1);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 12: INFORMAÇÕES FIPE
+// ────────────────────────────────────────────────
+
+function renderFipe(dv) {
+  if (!dv) return '';
+  var infFipe = (dv.informacoesFipe || [])[0] || {};
+  var valorAtual = infFipe.valorAtual;
+  var historico = infFipe.historicoPreco || [];
+
+  if (!valorAtual && !historico.length) return '';
+
+  var body = '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">';
+
+  // Valor atual
+  body += '<div style="min-width:140px">'
+        + '<div style="font-size:11px;text-transform:uppercase;font-weight:700;color:var(--lau-text-secondary);letter-spacing:.4px;margin-bottom:4px">Valor FIPE Atual</div>'
+        + '<div class="laudo-fipe-valor">' + fmtBRL(valorAtual) + '</div>'
+        + '<div style="font-size:11px;color:var(--lau-text-secondary)">'
+        + escHtml(fmt(infFipe.versao || dv.descricao)) + '<br>'
+        + 'Código FIPE: ' + escHtml(fmt(infFipe.fipeId || dv.codigoFipe))
+        + '</div>'
+        + '</div>';
+
+  // Histórico de preços
+  if (historico.length) {
+    var last12 = historico.slice(-12);
+    body += '<div style="flex:1;min-width:240px">'
+          + '<div style="font-size:11px;text-transform:uppercase;font-weight:700;color:var(--lau-text-secondary);letter-spacing:.4px;margin-bottom:6px">Histórico de Preços (últimos ' + last12.length + ' meses)</div>'
+          + '<div class="laudo-historico-list">'
+          + last12.map(function(h) {
+              return '<div class="laudo-historico-item">'
+                   + h.mes + '/' + h.ano + '<br><strong>' + fmtBRL(h.valor) + '</strong>'
+                   + (h.predicao ? '<br><em style="font-size:9px;opacity:.7">Projetado</em>' : '')
+                   + '</div>';
+            }).join('')
+          + '</div></div>';
+  }
+
+  body += '</div>';
+  return sectionHtml('📊', 'Informações FIPE', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 13: FICHA TÉCNICA [Premium]
+// ────────────────────────────────────────────────
+
+function renderFichaTecnica(ft) {
+  if (!ft) return '';
+  var veicosFipe = ft.veiculosFipe || [];
+  var registros = veicosFipe.length ? (veicosFipe[0].registros || []) : (ft.registros || []);
+
+  if (!registros.length) return '';
+
+  var body = registros.map(function(grupo) {
+    var especs = grupo.especificacoes || [];
+    return '<div class="laudo-ficha-group">'
+         + '<div class="laudo-ficha-group-title">' + escHtml(grupo.descricao || 'Geral') + '</div>'
+         + '<table class="laudo-table"><tbody>'
+         + especs.map(function(e) {
+             return '<tr><td class="lau-td-label" style="width:40%">' + escHtml(fmt(e.propriedade)) + '</td>'
+                  + '<td>' + escHtml(fmt(e.valor)) + '</td></tr>';
+           }).join('')
+         + '</tbody></table>'
+         + '</div>';
+  }).join('');
+
+  return sectionHtml('🔧', 'Ficha Técnica', body, true);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 14: DIAGNÓSTICO DO VEÍCULO [Premium]
+// ────────────────────────────────────────────────
+
+function renderDiagnostico(diag) {
+  if (!diag) return '';
+  var especifico = diag.especifico || {};
+  var diagnosticos = especifico.diagnostico || [];
+
+  var body = '';
+  if (!diagnosticos.length) {
+    body = '<div class="laudo-notice laudo-notice-ok">Nenhum diagnóstico específico registrado para este veículo.</div>';
+  } else {
+    body = '<table class="laudo-table"><thead><tr><th>Diagnóstico</th><th>Detalhe</th></tr></thead><tbody>'
+         + diagnosticos.map(function(d) {
+             return '<tr><td>' + escHtml(JSON.stringify(d)) + '</td></tr>';
+           }).join('')
+         + '</tbody></table>';
+  }
+
+  return sectionHtml('🩺', 'Diagnóstico do Veículo', body, diagnosticos.length === 0);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 15: RADAR SECURITÁRIO [Premium]
+// ────────────────────────────────────────────────
+
+function renderRadarSecuritario(rs) {
+  if (!rs || !rs.length) return '';
+  var item = rs[0];
+  var fn_ = item.franquiaNormal || {};
+  var fr  = item.franquiaReduzida || {};
+  var cias = item.cias || [];
+
+  var body = '<p style="font-size:12px;color:var(--lau-text-secondary);margin:0 0 12px">Estimativa de custo de seguro com base no perfil do veículo e nas seguradoras disponíveis no mercado.</p>';
+
+  body += '<div class="laudo-radar-grid">';
+
+  // Franquia Normal
+  body += '<div class="laudo-radar-card"><div class="laudo-radar-card-title">Franquia Normal — Prêmio</div>'
+        + radarValueRows(fn_.valorPremio)
+        + '</div>';
+  body += '<div class="laudo-radar-card"><div class="laudo-radar-card-title">Franquia Normal — Valor Franquia</div>'
+        + radarValueRows(fn_.valorFranquia)
+        + '</div>';
+
+  // Franquia Reduzida
+  body += '<div class="laudo-radar-card"><div class="laudo-radar-card-title">Franquia Reduzida — Prêmio</div>'
+        + radarValueRows(fr.valorPremio)
+        + '</div>';
+  body += '<div class="laudo-radar-card"><div class="laudo-radar-card-title">Franquia Reduzida — Valor Franquia</div>'
+        + radarValueRows(fr.valorFranquia)
+        + '</div>';
+
+  body += '</div>';
+
+  if (cias.length) {
+    body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:8px 0 6px">Seguradoras Participantes (' + cias.length + ')</h4>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:4px">'
+          + cias.map(function(c) { return '<span class="lau-status lau-neutral">' + escHtml(c.Nome || c.nome) + '</span>'; }).join('')
+          + '</div>';
+  }
+
+  return sectionHtml('🛡️', 'Radar Securitário', body, true);
+}
+
+function radarValueRows(obj) {
+  if (!obj) return '<div style="font-size:12px;color:var(--lau-text-secondary)">—</div>';
+  return '<div class="laudo-radar-row"><span class="laudo-radar-key">Média</span><span class="laudo-radar-val">' + escHtml(fmt(obj.media)) + '</span></div>'
+       + '<div class="laudo-radar-row"><span class="laudo-radar-key">Maior</span><span class="laudo-radar-val">' + escHtml(fmt(obj.maior)) + '</span></div>'
+       + '<div class="laudo-radar-row"><span class="laudo-radar-key">Menor</span><span class="laudo-radar-val">' + escHtml(fmt(obj.menor)) + '</span></div>';
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 16: CUSTO MÉDIO DE MANUTENÇÃO [Essencial / Completa]
+// ────────────────────────────────────────────────
+
+function renderCustoMedio(cm) {
+  if (!cm) return '';
+  var body = '';
+
+  body += '<div class="laudo-custo-cards">'
+        + '<div class="laudo-custo-card"><div class="laudo-custo-card-value">' + fmtBRL(cm.custoTotal) + '</div><div class="laudo-custo-card-label">Custo Total</div></div>'
+        + '<div class="laudo-custo-card"><div class="laudo-custo-card-value">' + fmtBRL(cm.custoPlanoRevisaoTotal) + '</div><div class="laudo-custo-card-label">Plano de Revisão</div></div>'
+        + '<div class="laudo-custo-card"><div class="laudo-custo-card-value">' + fmtBRL(cm.custoDesgastePecasTotal) + '</div><div class="laudo-custo-card-label">Peças de Desgaste</div></div>'
+        + '</div>';
+
+  var cada10k = cm.custoCada10k || [];
+  if (cada10k.length) {
+    body += '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--lau-primary);margin:8px 0 6px">Custo a Cada 10.000 km</h4>'
+          + '<table class="laudo-table"><thead><tr><th>Faixa (km)</th><th>Revisão</th><th>Peças</th><th>Total</th></tr></thead><tbody>'
+          + cada10k.map(function(c) {
+              return '<tr>'
+                   + '<td>' + escHtml(fmt(c.faixaKm || c.km)) + '</td>'
+                   + '<td>' + fmtBRL(c.custoRevisao) + '</td>'
+                   + '<td>' + fmtBRL(c.custoPecas) + '</td>'
+                   + '<td><strong>' + fmtBRL(c.custoTotal) + '</strong></td>'
+                   + '</tr>';
+            }).join('')
+          + '</tbody></table>';
+  }
+
+  return sectionHtml('🔩', 'Custo Médio de Manutenção', body, false);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 17: PLANO DE REVISÃO
+// ────────────────────────────────────────────────
+
+function renderRevisao(revisao) {
+  if (!revisao) return '';
+  var vf = revisao.veiculosFipe || [];
+  var regs = vf.length ? (vf[0].registros || []) : [];
+
+  if (!regs.length) return '';
+
+  var body = '<p style="font-size:12px;color:var(--lau-text-secondary);margin:0 0 10px">Clique em cada revisão para ver as peças e inspeções.</p>';
+
+  regs.forEach(function(r, i) {
+    var id = 'rev-' + i;
+    body += '<div class="laudo-revisao-card">'
+          + '<div class="laudo-revisao-card-header" onclick="laudoRevToggle(this)">'
+          + '<span class="laudo-revisao-km">' + fmtNum(r.kilometragem) + ' km</span>'
+          + '<span class="laudo-revisao-meta">/ ' + fmt(r.meses) + ' meses'
+          + (r.parcelas ? ' / ' + r.parcelas + ' parcelas' : '')
+          + (r.duracaoEmMinutos ? ' / ' + r.duracaoEmMinutos + ' min' : '')
+          + '</span>'
+          + '<span class="laudo-revisao-preco">' + fmtBRL(r.precoTotal) + '</span>'
+          + '</div>'
+          + '<div class="laudo-revisao-body">';
+
+    // Peças
+    var pecas = r.pecasTrocadas || [];
+    if (pecas.length) {
+      body += '<strong style="font-size:11px;text-transform:uppercase;color:var(--lau-text-secondary)">Peças Trocadas</strong>'
+            + '<ul style="margin:4px 0 10px 16px;padding:0;font-size:12px">'
+            + pecas.map(function(p) { return '<li>' + escHtml(p.descricao) + (p.quantidade > 1 ? ' ×' + p.quantidade : '') + '</li>'; }).join('')
+            + '</ul>';
+    }
+
+    // Inspeções
+    var insp = r.inspecoes || [];
+    if (insp.length) {
+      body += '<strong style="font-size:11px;text-transform:uppercase;color:var(--lau-text-secondary)">Itens Inspecionados</strong>'
+            + '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">'
+            + insp.map(function(ins) { return '<span class="lau-status lau-neutral" style="font-size:10px">' + escHtml(String(ins)) + '</span>'; }).join('')
+            + '</div>';
+    }
+
+    body += '</div></div>';
+  });
+
+  return sectionHtml('📅', 'Plano de Revisão', body, false);
+}
+
+function laudoRevToggle(header) {
+  var body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 18: CESTA BÁSICA DE PEÇAS
+// ────────────────────────────────────────────────
+
+function renderCestaBasica(cb) {
+  if (!cb) return '';
+  var vf = cb.veiculosFipe || [];
+  var regs = vf.length ? (vf[0].registros || []) : [];
+
+  if (!regs.length) return '';
+
+  var id = 'laudo-cesta-tbl';
+  var body = '<input class="laudo-cesta-search" type="text" placeholder="Pesquisar peça..." oninput="laudoCestaSearch(this)" />'
+           + '<table class="laudo-table" id="' + id + '">'
+           + '<thead><tr><th>Peça</th><th>Complemento</th><th>Nº Peça</th><th>Fabricante</th><th style="text-align:center">Genuína</th><th style="text-align:right">Valor</th></tr></thead>'
+           + '<tbody>'
+           + regs.map(function(r) {
+               var genuina = r.genuina ? '<span class="lau-status lau-ok">Sim</span>' : '<span class="lau-status lau-neutral">Não</span>';
+               return '<tr>'
+                    + '<td><strong>' + escHtml(fmt(r.apelidoDescricao)) + '</strong></td>'
+                    + '<td style="font-size:12px;color:var(--lau-text-secondary)">' + escHtml(fmt(r.complemento)) + '</td>'
+                    + '<td style="font-size:11px">' + escHtml(fmt(r.numeroPeca)) + '</td>'
+                    + '<td style="font-size:12px">' + escHtml(fmt(r.aposDescricaoFabricante)) + '</td>'
+                    + '<td style="text-align:center">' + genuina + '</td>'
+                    + '<td style="text-align:right;font-weight:600">' + fmtBRL(r.valor) + '</td>'
+                    + '</tr>';
+             }).join('')
+           + '</tbody></table>';
+
+  return sectionHtml('🛒', 'Cesta Básica de Peças (' + regs.length + ' itens)', body, true);
+}
+
+function laudoCestaSearch(input) {
+  var filter = input.value.toLowerCase();
+  var tbl = document.getElementById('laudo-cesta-tbl');
+  if (!tbl) return;
+  var rows = tbl.getElementsByTagName('tr');
+  for (var i = 1; i < rows.length; i++) {
+    var text = rows[i].textContent.toLowerCase();
+    rows[i].style.display = text.includes(filter) ? '' : 'none';
+  }
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 19: ACESSÓRIOS
+// ────────────────────────────────────────────────
+
+function renderAcessorios(ac) {
+  if (!ac) return '';
+  var vf = ac.veiculosFipe || [];
+  var regs = vf.length ? (vf[0].registros || []) : [];
+
+  if (!regs.length) return '';
+
+  // Deduplicar por descricao
+  var seen = {};
+  var serie = [], opcional = [];
+  regs.forEach(function(r) {
+    var d = (r.descricao || '').trim();
+    if (!d || seen[d]) return;
+    seen[d] = true;
+    if (r.itemDeSerie) serie.push(d);
+    else opcional.push(d);
+  });
+
+  var body = '';
+  if (serie.length) {
+    body += '<div class="laudo-acess-group-label">Itens de Série (' + serie.length + ')</div>'
+          + '<ul class="laudo-acess-list">'
+          + serie.map(function(d) { return '<li>' + escHtml(d) + '</li>'; }).join('')
+          + '</ul>';
+  }
+  if (opcional.length) {
+    body += '<div class="laudo-acess-group-label">Opcionais / Outros (' + opcional.length + ')</div>'
+          + '<ul class="laudo-acess-list">'
+          + opcional.map(function(d) { return '<li>' + escHtml(d) + '</li>'; }).join('')
+          + '</ul>';
+  }
+
+  return sectionHtml('⭐', 'Acessórios', body, true);
+}
+
+// ────────────────────────────────────────────────
+// SEÇÃO 20: COMPARATIVO DE ESPECIFICAÇÕES
+// ────────────────────────────────────────────────
+
+function renderComparativo(comp) {
+  if (!comp) return '';
+  var veiculos = comp.veiculoComparativo || [];
+  if (!veiculos.length) return '';
+
+  // Ordenar por posicaoGeral
+  veiculos = veiculos.slice().sort(function(a, b) {
+    return (parseInt(a.posicaoGeral) || 99) - (parseInt(b.posicaoGeral) || 99);
+  });
+
+  var body = '<p style="font-size:12px;color:var(--lau-text-secondary);margin:0 0 12px">Comparativo entre veículos similares da mesma categoria. Posição 1 = melhor desempenho geral.</p>'
+           + '<div class="laudo-comp-cards">';
+
+  veiculos.forEach(function(v) {
+    var precoObj = v.preco || {};
+    var planoObj = v.planoDeRevisao || {};
+    var descObj  = v.descricao || {};
+    var especs   = v.espesificacoes || [];
+    var equips   = v.equipamentos || [];
+    var partes   = v.partes || [];
+    var pos = v.posicaoGeral || '—';
+
+    body += '<div class="laudo-comp-card">'
+          + '<div class="laudo-comp-card-header">'
+          + (v.marcaImagem ? '<img class="laudo-comp-card-logo" src="' + escHtml(v.marcaImagem) + '" alt="' + escHtml(v.marca) + '" onerror="this.style.display=\'none\'" />' : '')
+          + '<div style="flex:1;min-width:0">'
+          + '<div style="font-size:12px;font-weight:700;color:var(--lau-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(v.marca || '') + '</div>'
+          + '<div style="font-size:10px;color:var(--lau-text-secondary)">' + escHtml(fmt(v.ano)) + '</div>'
+          + '</div>'
+          + '<div class="laudo-comp-card-posicao">' + pos + '</div>'
+          + '</div>'
+          + '<div class="laudo-comp-card-body">'
+          + '<div class="laudo-comp-card-modelo">' + escHtml(v.modelo || '') + '</div>';
+
+    // Dados básicos
+    if (precoObj.preco)                    body += compRow('Preço', fmtBRL(precoObj.preco));
+    if (planoObj.primeiraRevisaoPreco)     body += compRow('1ª Revisão', fmtBRL(planoObj.primeiraRevisaoPreco));
+
+    especs.slice(0, 4).forEach(function(e) {
+      body += compRow(e.descricao, e.valor);
+    });
+
+    // Equipamentos (resumido)
+    if (equips.length) {
+      body += '<div style="margin-top:6px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lau-text-secondary);margin-bottom:3px">Equipamentos</div>'
+            + '<div>';
+      equips.slice(0, 6).forEach(function(eq) {
+        var cls = eq.status === 'Series' ? 'equip-series' : (eq.status === 'Missing' ? 'equip-missing' : 'equip-opt');
+        body += '<span class="laudo-comp-equip-tag ' + cls + '">' + escHtml(eq.descricao) + '</span>';
+      });
+      if (equips.length > 6) body += '<span class="laudo-comp-equip-tag equip-opt">+' + (equips.length - 6) + ' mais</span>';
+      body += '</div>';
+    }
+
+    body += '</div></div>';
+  });
+
+  body += '</div>';
+  return sectionHtml('📐', 'Comparativo de Especificações', body, true);
+}
+
+function compRow(key, val) {
+  return '<div class="laudo-comp-row"><span class="laudo-comp-key">' + escHtml(key) + '</span><span class="laudo-comp-val">' + escHtml(String(val || '—')) + '</span></div>';
+}
+
+// ────────────────────────────────────────────────
+// RENDERIZADOR PRINCIPAL
+// ────────────────────────────────────────────────
+
+function renderLaudo(data) {
+  var type = detectType(data);
+  var root = document.getElementById('laudo-root');
+  if (!root) return;
+
+  var html = '';
+
+  // Cabeçalho
+  html += renderHeader(data, type);
+
+  // Análise de Risco
+  html += renderAnaliseRisco(data.analiseRisco);
+
+  // Dados do Veículo
+  html += renderDadosVeiculo(data);
+
+  // Situação (Roubo/Furto + Sinistro + BN)
+  html += renderSituacaoVeiculo(data);
+
+  // Débitos
+  html += renderDebitos(data.baseEstadual);
+
+  // Restrições
+  html += renderRestricoes(data);
+
+  // Leilão
+  html += renderLeilao(data.leilao);
+
+  // Seções exclusivas de Completa e Premium
+  if (type === 'Completa' || type === 'Premium') {
+    html += renderRecall(data.recall);
+    html += renderGravame(data.gravame);
+    html += renderLocadora(data.registroEmLocadora);
+  }
+
+  // Histórico de Proprietários
+  html += renderHistoricoProprietarios(data.historicoProprietarios);
+
+  // FIPE
+  html += renderFipe(data.dadosBasicosDoVeiculo);
+
+  // Seções exclusivas Premium
+  if (type === 'Premium') {
+    html += renderFichaTecnica(data.fichaTecnica);
+    html += renderDiagnostico(data.diagnosticoDoVeiculo);
+    html += renderRadarSecuritario(data.radarSecuritario);
+  }
+
+  // Custo Médio (Essencial + Completa)
+  if (type === 'Essencial' || type === 'Completa') {
+    html += renderCustoMedio(data.custoMedio);
+  }
+
+  // Plano de Revisão (todos)
+  html += renderRevisao(data.revisao);
+
+  // Cesta Básica (todos — colapsada por padrão)
+  html += renderCestaBasica(data.cestaBasica);
+
+  // Acessórios (todos — colapsada por padrão)
+  html += renderAcessorios(data.acessorios);
+
+  // Comparativo
+  html += renderComparativo(data.comparativoEspecificacoes);
+
+  // Rodapé
+  html += '<div class="laudo-footer">Laudo Veicular &mdash; Consulta ' + escHtml(type)
+        + (data.dtUltimaAtualizacao ? ' &mdash; ' + escHtml(data.dtUltimaAtualizacao) : '')
+        + '</div>';
+
+  root.innerHTML = html;
+
+  // Injeta logo da montadora após inserir o HTML no DOM
+  var marca = (data.dadosBasicosDoVeiculo && data.dadosBasicosDoVeiculo.marca)
+              || data.marcaModelo || '';
+  setLogo(marca);
+}
+
+// ────────────────────────────────────────────────
+// INICIALIZAÇÃO
+// ────────────────────────────────────────────────
+
+(function init() {
+  function doRender() {
+    /* laudoData deve ser declarado pelo Thymeleaf antes deste script.
+       Em ambiente de desenvolvimento, defina window.laudoData = { ... } antes. */
+    var data = window.laudoData;
+    // Suporte extra: se por algum motivo ainda chegou como string, parseia aqui também
+    if (typeof data === 'string') {
+      try { data = JSON.parse(data); } catch(e) { data = {}; }
+    }
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      renderLaudo(data);
+    } else {
+      var root = document.getElementById('laudo-root');
+      if (root) root.innerHTML = '<div class="laudo-empty">⚠️ Nenhum dado de laudo disponível.<br><small>Verifique se o Controller está passando <code>laudoJson</code> para o Model.</small></div>';
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', doRender);
+  } else {
+    doRender();
+  }
+})();
+    </script>
+
+  </th:block>
+
 </body>
 </html>

@@ -38,4 +38,20 @@ public class EmailService {
 
 		mailSender.send(message);
 	}
+	
+	public void sendOrderFinished(String to, String placa) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setFrom("no-reply@autolaudos.com.br");
+		message.setSubject("Consulta - Auto Laudos");
+		message.setText("""
+				Olá!
+
+				Sua consulta referente a placa %s já está disponivel, basta acessar nosso site e efetuar o login.
+
+				Se você não solicitou isso, ignore este email.
+				""".formatted(placa));
+
+		mailSender.send(message);
+	}
 }

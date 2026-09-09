@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.vista.rvm.dto.UserDTO;
 import br.com.vista.rvm.dto.enums.Plans;
+import br.com.vista.rvm.service.OrderService;
 import br.com.vista.rvm.service.PaymentService;
 import br.com.vista.rvm.service.UserService;
 import br.com.vista.rvm.supplier.checktudo.dto.CheckTudoAgregadosResponseDTO;
@@ -39,6 +40,7 @@ public class HomeController {
 	private final CheckTudoService checktudoService;
 	private final PaymentService paymentService;
 	private final UserService userService;
+	private final OrderService orderService;
 
 	private final AuthenticationManager authenticationManager;
 
@@ -50,6 +52,7 @@ public class HomeController {
 	@PostMapping("/new-session")
 	@ResponseBody
 	public ResponseEntity<Void> salvarPlaca(@RequestBody Map<String, String> body, HttpSession session) {
+		session.setAttribute("veiculo", null);
 		session.setAttribute("placa", body.get("placa"));
 		return ResponseEntity.ok().build();
 	}
@@ -163,35 +166,15 @@ public class HomeController {
 	
 	@PostMapping("/order/notification")
 	public ResponseEntity<Void> receberNotificacao(@RequestBody CheckTudoWebhookDTO payload) {
-	    log.info("Webhook CheckTudo recebido: data={}", payload.getPayload().getData());
+	    log.info("Webhook CheckTudo recebido: payload={}", payload);
 
 	    try {
-//	        if (!"payment".equals(payload.getType())) {
-//	            return ResponseEntity.ok().build();
-//	        }
-//
-//	        String externalId = payload.getData().getId();
-//
-//	        var statusResponse = mercadoPagoService.consultarStatusPagamento(Long.parseLong(externalId));
-//	        var paymentStatus = MercadoPagoStatus.fromValue(statusResponse.getStatus()).toPaymentStatus();
-//	        var payment = paymentService.updateStatus(externalId, paymentStatus);
-//
-//	        // ✅ só gera laudo se APPROVED e ainda não foi processado
-//	        if (paymentStatus == PaymentStatus.PAID) {
-//	            var order = orderService.findByPaymentId(payment.getId());
-//
-//	            if (order.isEmpty()) {
-//	                log.warn("Nenhuma order encontrada para paymentId={}", payment.getId());
-//	                return ResponseEntity.ok().build();
-//	            }
-//
-//	            if (order.get().getStatus() == OrderStatus.FINISHED) {
-//	                log.info("Order id={} já foi processada, ignorando webhook.", order.get().getId());
-//	                return ResponseEntity.ok().build(); // ✅ idempotência
-//	            }
-//
-//	            orderService.requestReport(order.get().getId());
-//	        }
+	    	
+	    	if(payload.getOrder() == null || payload.getPayload().getData() == null) {
+	    		return ResponseEntity.ok().build();
+	    	}
+	    	
+	    	orderService.finishedOrderByExternalOrderId(payload.getOrder().getOrderId(), payload.getPayload().getData().toString());
 
 	    } catch (Exception e) {
 	        log.error("Erro ao processar webhook: {}", e.getMessage(), e);

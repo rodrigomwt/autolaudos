@@ -25,10 +25,7 @@ public class FeignConfig {
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-            requestTemplate.header("Content-Type", "application/json");
-            requestTemplate.header("Accept", "*/*");
             requestTemplate.header("Cache-Control", "no-cache");
-            requestTemplate.header("User-Agent", "PostmanRuntime/7.51.1");
         };
     }
     

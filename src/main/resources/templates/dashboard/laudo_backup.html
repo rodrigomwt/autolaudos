@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{dashboard/layout_dash}">
+
+<head>
+<title>Laudo</title>
+<link rel="stylesheet" th:href="@{/dashboard/css/laudo.css}" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+	<main layout:fragment="content">
+		<div id="laudoLoading" class="laudo-loading">
+			<div class="laudo-loading-box">
+				<div class="spinner"></div>
+				<h3>Gerando seu laudo...</h3>
+				<p>Estamos consultando o provedor. Isso pode levar alguns
+					instantes.</p>
+			</div>
+		</div>
+
+		<div id="laudoErro" style="display: none;">
+			<div class="dash-card">
+				<div class="dash-card-title">Erro ao carregar laudo</div>
+				<p id="laudoErroMsg">Não foi possível carregar o laudo.</p>
+			</div>
+		</div>
+
+		<div id="laudoContent" style="display: none;">
+
+			<!-- Botão de Impressão -->
+			<div class="laudo-print-header">
+				<button onclick="window.print()" class="btn-print" title="Imprimir Laudo">
+					<i class="fas fa-print"></i> Imprimir
+				</button>
+			</div>
+
+			<!-- HERO CARD -->
+			<div class="laudo-hero">
+				<div class="laudo-hero-left">
+					<div class="laudo-placa-box">
+						<div class="placa-label">Placa</div>
+						<div class="placa-value" id="heroPlaca">—</div>
+					</div>
+					<div class="laudo-hero-info">
+						<h2 id="heroModelo">—</h2>
+						<div class="hero-meta">
+							<div class="hero-meta-item">
+								<i class="fas fa-calendar-alt"></i> Fab: <span id="heroAnoFab">—</span>
+							</div>
+							<div class="hero-meta-item">
+								<i class="fas fa-calendar-check"></i> Mod: <span id="heroAnoMod">—</span>
+							</div>
+							<div class="hero-meta-item">
+								<i class="fas fa-gas-pump"></i> <span id="heroCombustivel">—</span>
+							</div>
+							<div class="hero-meta-item">
+								<i class="fas fa-map-marker-alt"></i> <span id="heroUf">—</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="laudo-hero-right">
+					<div class="fipe-label">Valor FIPE Atual</div>
+					<div class="fipe-value" id="heroFipe">—</div>
+					<div class="fipe-sub" id="heroFipeSub">—</div>
+				</div>
+			</div>
+
+			<!-- RISCO + DADOS BÁSICOS -->
+			<div class="laudo-grid-2">
+
+				<!-- Análise de Risco -->
+				<div class="laudo-card">
+					<div class="laudo-card-title">
+						<i class="fas fa-shield-alt"></i> Análise de Risco
+					</div>
+					<div class="risco-card">
+						<div class="risco-score-circle baixo" id="riscoCircle">1</div>
+						<div class="risco-info">
+							<h3 id="riscoTitulo">Baixo Risco</h3>
+							<p id="riscoParecer">—</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Dados Básicos -->
+				<div class="laudo-card">
+					<div class="laudo-card-title">
+						<i class="fas fa-car"></i> Dados Básicos do Veículo
+					</div>
+					<table class="info-table">
+						<tr>
+							<td>Marca</td>
+							<td id="dbMarca">—</td>
+						</tr>
+						<tr>
+							<td>Modelo</td>
+							<td id="dbModelo">—</td>
+						</tr>
+						<tr>
+							<td>Chassi</td>
+							<td id="dbChassi">—</td>
+						</tr>
+						<tr>
+							<td>RENAVAM</td>
+							<td id="dbRenavam">—</td>
+						</tr>
+						<tr>
+							<td>Cilindradas</td>
+							<td id="dbCilindradas">—</td>
+						</tr>
+						<tr>
+							<td>Código FIPE</td>
+							<td id="dbCodigoFipe">—</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<!-- SITUAÇÃO DO VEÍCULO -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-clipboard-check"></i> Situação do Veículo
+				</div>
+				<div class="status-grid" id="statusGrid">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- DÉBITOS -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-file-invoice-dollar"></i> Débitos
+				</div>
+				<div id="debitosContainer">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- BASE ESTADUAL -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-landmark"></i> Base Estadual
+				</div>
+				<div class="laudo-grid-2" style="margin-bottom: 0;">
+					<table class="info-table">
+						<tr>
+							<td>Proprietário</td>
+							<td id="bePronome">—</td>
+						</tr>
+						<tr>
+							<td>Município</td>
+							<td id="beMunicipio">—</td>
+						</tr>
+						<tr>
+							<td>UF</td>
+							<td id="beUf">—</td>
+						</tr>
+						<tr>
+							<td>Categoria</td>
+							<td id="beCategoria">—</td>
+						</tr>
+						<tr>
+							<td>Espécie</td>
+							<td id="beEspecie">—</td>
+						</tr>
+						<tr>
+							<td>Situação</td>
+							<td id="beSituacao">—</td>
+						</tr>
+					</table>
+					<table class="info-table">
+						<tr>
+							<td>Restrição Financeira</td>
+							<td id="beRestFinanceira">—</td>
+						</tr>
+						<tr>
+							<td>Restrição Judicial</td>
+							<td id="beRestJudicial">—</td>
+						</tr>
+						<tr>
+							<td>Restrição Roubo/Furto</td>
+							<td id="beRestRoubo">—</td>
+						</tr>
+						<tr>
+							<td>Restrição Renajud</td>
+							<td id="beRestRenajud">—</td>
+						</tr>
+						<tr>
+							<td>Comunicação Venda</td>
+							<td id="beComVenda">—</td>
+						</tr>
+						<tr>
+							<td>Emissão CRV</td>
+							<td id="beEmissaoCrv">—</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<!-- LEILÃO -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-gavel"></i> Histórico de Leilão
+				</div>
+				<div class="leilao-scores" id="leilaoScores">
+					<!-- populado via JS -->
+				</div>
+				<div id="leilaoDescricao"
+					style="font-size: 13px; color: #5a6a7a; margin-bottom: 14px;"></div>
+				<div id="leilaoTabelaWrapper">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- GRAVAMES -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-link"></i> Histórico de Gravames / Financiamentos
+				</div>
+				<div id="gravamesContainer">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- GRÁFICO FIPE -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-chart-line"></i> Histórico de Preço FIPE
+				</div>
+				<div class="fipe-chart-wrapper">
+					<canvas id="fipeChart"></canvas>
+				</div>
+			</div>
+
+			<!-- PROPRIETÁRIOS + KM -->
+			<div class="laudo-grid-2">
+				<div class="laudo-card">
+					<div class="laudo-card-title">
+						<i class="fas fa-users"></i> Histórico de Proprietários
+					</div>
+					<div id="proprietariosContainer">
+						<!-- populado via JS -->
+					</div>
+				</div>
+				<div class="laudo-card">
+					<div class="laudo-card-title">
+						<i class="fas fa-tachometer-alt"></i> Histórico de Quilometragem
+					</div>
+					<div id="kmContainer">
+						<!-- populado via JS -->
+					</div>
+				</div>
+			</div>
+
+			<!-- PLANO DE REVISÃO -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-tools"></i> Plano de Revisão
+				</div>
+				<div class="revisao-tabs" id="revisaoTabs">
+					<!-- populado via JS -->
+				</div>
+				<div id="revisaoContent">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- ACESSÓRIOS -->
+			<div class="laudo-card">
+				<div class="laudo-card-title">
+					<i class="fas fa-star"></i> Acessórios de Série
+				</div>
+				<div class="acessorios-grid" id="acessoriosGrid">
+					<!-- populado via JS -->
+				</div>
+			</div>
+
+			<!-- ===== SCRIPT ===== -->
+			<!-- Injeta o ID do laudo para o JS externo conseguir ler -->
+			<script th:inline="javascript">
+				const LAUDO_ID = /*[[${laudoId}]]*/0;
+			</script>
+			<script th:src="@{/dashboard/js/laudo.js}"></script>
+
+		</div>
+	</main>
+</body>
+</html>

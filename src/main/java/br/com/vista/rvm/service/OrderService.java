@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.vista.rvm.entity.Order;
 import br.com.vista.rvm.entity.enums.OrderStatus;
 import br.com.vista.rvm.event.PaymentApprovedEvent;
@@ -25,14 +28,15 @@ public class OrderService {
 	private final UserService userService;
 	private final PlanService planService;
 	private final PaymentService paymentService;
-	//private final ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
 	private final CheckTudoService checkTudoService;
+	private final EmailService emailService;
 
 	public Order create(Long userId, Long planId, Long paymentId, String licensePlate, String gateway, String product, String code) {
-		if(!orderRepository.findByUserIdAndLicensePlateAndStatus(userId, licensePlate, OrderStatus.REQUESTED_REPORT).isEmpty()) {
+		if (!orderRepository.findByUserIdAndLicensePlateAndStatus(userId, licensePlate, OrderStatus.REQUESTED_REPORT).isEmpty()) {
 			throw new RuntimeException("Já existe um pedido com essa placa em processamento. Placa: " + licensePlate);
 		}
-		
+
 		var user = userService.findById(userId);
 		var plan = planService.findById(planId);
 		var payment = paymentService.findById(paymentId);
@@ -66,23 +70,34 @@ public class OrderService {
 		return orderRepository.findByUserIdAndLicensePlateContainingIgnoreCase(userId, licensePlate, pageable);
 	}
 
-	public Order updateQueryResult(Long orderId, String queryResult) {
-		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order não encontrada: " + orderId));
-		order.setQueryResult(queryResult);
-		return orderRepository.save(order);
+	public void finishedOrderByExternalOrderId(String orderId, String queryResult) {
+		var order = orderRepository.findByQueryResultOrderIdAndStatus(orderId, OrderStatus.REQUESTED_REPORT.toString());
+    	if(order.isEmpty()) {
+    		throw new RuntimeException("Order não encontrada: " + orderId);
+    	}
+    	
+    	order.get().setStatus(OrderStatus.FINISHED);
+    	order.get().setQueryResult(queryResult);
+		
+    	orderRepository.save(order.get());
+    	
+    	var user = userService.findById(order.get().getUser().getId());
+    	emailService.sendOrderFinished(user.getEmail(), order.get().getLicensePlate());
 	}
 
 	public void requestReport(Long orderId) {
 		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order não encontrada: " + orderId));
 
 		try {
-			var report = checkTudoService.requestReport(order.getLicensePlate(), Integer.parseInt(order.getQueryCode()));
-			//JsonNode root = objectMapper.readTree(json);
-			//var queryCode = root.path("conferi").path("solicitacao").path("codigoConsulta").asText();
+			var report = checkTudoService.requestReport(order.getLicensePlate().replaceAll("[^a-zA-Z0-9]", ""), Integer.parseInt(order.getQueryCode()));
 
-			//order.setQueryCode(queryCode);
-			//order.setQueryResult(json);
-			order.setStatus(OrderStatus.REQUESTED_REPORT);
+			if (report.getStatus().getCod() == 200) {
+				order.setStatus(OrderStatus.REQUESTED_REPORT);
+			} else { 
+				order.setStatus(OrderStatus.ERROR);
+			}
+			
+			order.setQueryResult(toJson(report));
 			orderRepository.save(order);
 		} catch (Exception e) {
 			log.error("Erro ao gerar laudo para orderId={}: {}", orderId, e.getMessage(), e);
@@ -90,29 +105,38 @@ public class OrderService {
 			throw new RuntimeException("Erro ao buscar laudo", e);
 		}
 	}
-	
-	public String gerarLaudoChecktudo(Long orderId) {
+
+	public String showReport(Long orderId) {
 		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order não encontrada: " + orderId));
 
-		if (order.getQueryCode() == null || order.getQueryCode().isBlank()) {
-			throw new RuntimeException("Order sem código de consulta: " + orderId);
-		}
-		
+//		if (order.getQueryCode() == null || order.getQueryCode().isBlank()) {
+//			throw new RuntimeException("Order sem código de consulta: " + orderId);
+//		}
+
 //		if(order.getQueryResult() == null) { 
 //			var report = checkTudoService.requestReport(order.getLicensePlate().replace("-", ""), Integer.parseInt(order.getQueryCode()));
 //			order.setQueryResult(report);
 //			orderRepository.save(order);
 //		}
-		
+
 		return order.getQueryResult();
 	}
+	
+	public String toJson(Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            log.error("Erro ao converter objeto para JSON: {}", e.getMessage(), e);
+            return null;
+        }
+    }
 
 	@EventListener
 	public void onPaymentApproved(PaymentApprovedEvent event) {
 		var order = findByPaymentId(event.getPaymentId());
 
 		if (!order.isEmpty()) {
-			//gerarLaudo(order.get().getId());
+			requestReport(order.get().getId());
 		}
 	}
 
@@ -123,4 +147,9 @@ public class OrderService {
 	public void deleteById(Long id) {
 		orderRepository.deleteById(id);
 	}
+	
+	public Optional<Order> findByQueryResultOrderIdAndStatus(String externalOderId, String status) {
+		return orderRepository.findByQueryResultOrderIdAndStatus(externalOderId, status);
+	}
+	
 }

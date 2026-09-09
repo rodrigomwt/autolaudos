@@ -106,7 +106,7 @@ public class PaymentService {
             case "approved"              -> PaymentStatus.PAID;
             case "rejected", "cancelled" -> PaymentStatus.REJECTED;
             case "refunded"              -> PaymentStatus.REFUNDED;
-            case "in_process", "pending" -> PaymentStatus.PENDING;
+            case "in_process", "pending" -> PaymentStatus.PAID;
             default                      -> PaymentStatus.PENDING;
         };
     }
